@@ -30,8 +30,7 @@ public class TicketController {
 	// 티켓 등록
 	@Operation(summary = "post swagger", description = "Ticket 등록 post 메서드 체크")
 	@PostMapping
-	public ResponseEntity<TicketResponseDto> createTicket(
-		@AuthenticationPrincipal UserDetailsImpl userDetails, // 변경필요
+	public ResponseEntity<TicketResponseDto> createTicket(@AuthenticationPrincipal UserDetailsImpl userDetails, // 변경필요
 		@PathVariable("ticketId") Long ticketId,	// 노란색 물결 해결하기, task 완성되면 변경하기
 		@RequestBody TicketResponseDto ticketResponseDto
 	) {
@@ -41,21 +40,21 @@ public class TicketController {
 	// 티켓 전체 조회 (테스크에 들어갈 내용) getTickets
 
 	// 티켓 상세 조회
-	@GetMapping("/{ticket_id}")
+	@GetMapping("/{ticketId}")
 	public ResponseEntity<TicketResponseDto> getTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ticketService.getTicket(ticketId, userDetails.getUser());
 	}
 
 	// 티켓 수정
-	@PatchMapping("/{ticket_id}")
+	@PatchMapping("/{ticketId}")
 	public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ticketService.updateTicket(ticketId, userDetails.getUser());
 	}
 
 	// 티켓 삭제
-	@DeleteMapping("/{ticket_id}")
-	public ResponseEntity<TicketResponseDto> deleteTicke(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.deleteTicke(ticketId, userDetails.getUser());
+	@DeleteMapping("/{ticketId}")
+	public ResponseEntity<TicketResponseDto> deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ticketService.deleteTicket(ticketId, userDetails.getUser());
 	}
 }
 
