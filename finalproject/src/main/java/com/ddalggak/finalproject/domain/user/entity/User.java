@@ -1,4 +1,4 @@
-package com.ddalggak.finalproject.domain.member.entity;
+package com.ddalggak.finalproject.domain.user.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Entity
-public class Member {
+@Entity(name = "Users")
+public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long member_id;
+	private Long userId;
 
 	@Column(nullable = false, unique = true)
 	private String email;
@@ -26,7 +26,7 @@ public class Member {
 	@Column(nullable = false)
 	private String password;
 
-	public Member(String email, String nickname, String password) {
+	public User(String email, String nickname, String password) {
 		this.email = email;
 		this.nickname = nickname;
 		this.password = password;
