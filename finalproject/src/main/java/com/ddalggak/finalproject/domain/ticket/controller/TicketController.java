@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
 import com.ddalggak.finalproject.domain.ticket.service.TicketService;
+import com.ddalggak.finalproject.global.security.UserDetailsImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,10 +32,10 @@ public class TicketController {
 	@PostMapping
 	public ResponseEntity<TicketResponseDto> createTicket(
 		@AuthenticationPrincipal UserDetailsImpl userDetails, // 변경필요
-		@PathVariable("ticketId") Long ticket_id,	// 노란색 물결 member 다되면 다시 수정하기
+		@PathVariable("ticketId") Long ticketId,	// 노란색 물결 해결하기, task 완성되면 변경하기
 		@RequestBody TicketResponseDto ticketResponseDto
 	) {
-		return ticketService.createTicket(userDetails, ticket_id, ticketResponseDto);
+		return ticketService.createTicket(userDetails, ticketId, ticketResponseDto);
 	}
 
 	// 티켓 전체 조회 (테스크에 들어갈 내용) getTickets
