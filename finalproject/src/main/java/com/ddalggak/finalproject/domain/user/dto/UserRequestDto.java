@@ -1,10 +1,10 @@
-package com.ddalggak.finalproject.domain.member.dto;
+package com.ddalggak.finalproject.domain.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-public class MemberRequestDto {
+public class UserRequestDto {
 
 	@Schema(description = "인증이 가능한 이메일을 입력해주세요",
 		pattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")

@@ -1,4 +1,4 @@
-package com.ddalggak.finalproject.domain.member.controller;
+package com.ddalggak.finalproject.domain.user.controller;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ddalggak.finalproject.domain.member.dto.MemberRequestDto;
-import com.ddalggak.finalproject.domain.member.repository.MemberRepository;
-import com.ddalggak.finalproject.domain.member.service.MemberService;
+import com.ddalggak.finalproject.domain.user.dto.UserRequestDto;
+import com.ddalggak.finalproject.domain.user.repository.UserRepository;
+import com.ddalggak.finalproject.domain.user.service.UserService;
 import com.ddalggak.finalproject.global.dto.SuccessCode;
 import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 
@@ -23,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class MemberController {
-	private final MemberService memberService;
-	private final MemberRepository memberRepository;
+public class UserController {
+	private final UserService userService;
+	private final UserRepository userRepository;
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> signup(@Valid @RequestBody MemberRequestDto memberRequestDto,
+	public ResponseEntity<?> signup(@Valid @RequestBody UserRequestDto userRequestDto,
 		BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			List<ObjectError> list = bindingResult.getAllErrors();
@@ -38,7 +38,7 @@ public class MemberController {
 
 		}
 
-		memberService.signup(memberRequestDto);
+		userService.signup(userRequestDto);
 
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 
