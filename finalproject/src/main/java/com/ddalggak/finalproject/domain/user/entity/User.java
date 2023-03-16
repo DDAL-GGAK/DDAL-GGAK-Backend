@@ -2,9 +2,13 @@ package com.ddalggak.finalproject.domain.user.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.ddalggak.finalproject.domain.user.role.UserRole;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +29,10 @@ public class User {
 
 	@Column(nullable = false)
 	private String password;
+
+	@Column(nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private UserRole role;
 
 	public User(String email, String nickname, String password) {
 		this.email = email;
