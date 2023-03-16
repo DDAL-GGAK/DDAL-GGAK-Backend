@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.ddalggak.finalproject.domain.member.exception.MemberException;
+import com.ddalggak.finalproject.domain.user.exception.UserException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +40,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ErrorResponse.of(ErrorCode.SERVER_ERROR);
 	}
 
-	@ExceptionHandler(value = {MemberException.class})
-	protected ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {
-		log.error("handleMemberException throw MemberException : {}", e.getErrorCode());
+	@ExceptionHandler(value = {UserException.class})
+	protected ResponseEntity<ErrorResponse> handleUserException(UserException e) {
+		log.error("handleUserException throw UserException : {}", e.getErrorCode());
 		return ErrorResponse.from(e.getErrorCode(), e.getMessage());
 	}
 
