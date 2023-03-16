@@ -1,4 +1,4 @@
-package main.java.com.ddalggak.finalproject.ticket.entity;
+package com.ddalggak.finalproject.ticket.entity;
 
 public class Ticket {
 }
