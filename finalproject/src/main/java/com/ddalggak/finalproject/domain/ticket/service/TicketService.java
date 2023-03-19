@@ -97,15 +97,15 @@ public class TicketService {
 	}
 
 	// 티켓 삭제하기
-	// @Transactional
-	// public ResponseEntity deleteTicket(Long ticketId, User user) {
-	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
-	// 		() -> new CustomException(NOT_FOUND_TICKET));
-	// 	if (user.getNickname().equals(ticket.getOwner().getNickname()))
-	// 		ticketRepository.deleteById(ticketId);
-	// 	else throw new CustomException(UNAUTHORIZED_USER);
-	// 	return ResponseEntity.ok().body("티켓 삭제 성공");
-	// }
+	@Transactional
+	public ResponseEntity deleteTicket(Long ticketId, User user) {
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+			() -> new CustomException(NOT_FOUND_TICKET));
+		if (user.getNickname().equals(ticket.getOwner().getNickname()))
+			ticketRepository.deleteById(ticketId);
+		else throw new CustomException(UNAUTHORIZED_USER);
+		return ResponseEntity.ok().body("티켓 삭제 성공");
+	}
 
 	// // 티켓 완료하기 티켓에 가져오기
 

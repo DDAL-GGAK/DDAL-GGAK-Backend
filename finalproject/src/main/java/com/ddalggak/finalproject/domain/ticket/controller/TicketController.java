@@ -63,9 +63,9 @@ public class TicketController {
 	}
 
 	// 티켓 삭제
-	// @DeleteMapping("/{ticketId}")
-	// public ResponseEntity deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	return ticketService.deleteTicket(ticketId, userDetails.getUser());
-	// }
+	@DeleteMapping("/{ticketId}")
+	public ResponseEntity deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ticketService.deleteTicket(ticketId, userDetails.getUser());
+	}
 }
 
