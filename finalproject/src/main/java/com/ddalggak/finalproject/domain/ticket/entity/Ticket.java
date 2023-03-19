@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 
 import com.ddalggak.finalproject.domain.task.entity.Task;
 import com.ddalggak.finalproject.domain.user.entity.Label;
+import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.global.entity.BaseEntity;
 
 import lombok.Getter;
@@ -52,11 +53,12 @@ public class Ticket extends BaseEntity {
 	@JoinColumn(name = "taskId")
 	private Task task;
 
-	// user 연관관계
-	@OneToMany(mappedBy = "ticket")
-	private List<TicketUser> ticketUserList = new ArrayList<>();
+	// user 연관관계 // FE에서 user -> onwer 로 변경요청
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "userId")
+	private User owner;
 
-	// label 연관관계
+	// label 연관관계 //티켓에 라벨이 필요한가? // 단방향으로 연관관계? 양방향?
 	@OneToMany(mappedBy = "ticket")
 	private List<Label> labelList = new ArrayList<>();
 }
