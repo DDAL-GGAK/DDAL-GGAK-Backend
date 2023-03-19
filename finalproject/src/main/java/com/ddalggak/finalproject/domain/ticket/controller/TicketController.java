@@ -1,7 +1,6 @@
 package com.ddalggak.finalproject.domain.ticket.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
