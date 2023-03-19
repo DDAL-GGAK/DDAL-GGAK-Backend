@@ -32,7 +32,7 @@ public class TicketService {
 	private final TicketRepository ticketRepository;
 
 	// 티켓 등록
-
+	@Transactional
 	public ResponseEntity<TicketResponseDto> createTicket(TicketResponseDto ticketResponseDto,
 		User user) throws IOException {
 		System.out.println("--------user = " + user.getNickname());
@@ -72,14 +72,16 @@ public class TicketService {
 	// 	return list;
 	// }
 	//
-	// // 티켓 1개 조회
-	// @Transactional
-	// public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, UserDetailsImpl userDetails){
-	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
-	// 		() -> new CustomException(NOT_FOUND_TICKET));
-	// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
-	// 	return ResponseEntity.ok().body(ticketResponseDto);
-	// }
+
+	// 티켓 상세 조회
+	@Transactional
+	public ResponseEntity<TicketResponseDto> getTicket(User user, Long ticketId) {
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+			() -> new CustomException(NOT_FOUND_TICKET));
+		TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+		return ResponseEntity.ok().body(ticketResponseDto);
+	}
+
 	//
 	// // 티켓 수정하기 (티켓 수정이 가능했었나요? 일단 만들어 놓자!)
 	// @Transactional
