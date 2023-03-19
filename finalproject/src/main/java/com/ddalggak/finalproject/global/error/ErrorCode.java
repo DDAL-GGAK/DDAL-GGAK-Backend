@@ -32,7 +32,7 @@ public enum ErrorCode {
     NOT_FOUND_CLIENT(NOT_FOUND,"D-003","해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_PHOTO(NOT_FOUND,"D-004","해당 사진을 찾을 수 없습니다."),
     NOT_FOUND_COMMENT(NOT_FOUND,"D-005","해당 댓글을 찾을 수 없습니다."),
-    NOT_FOUND_TICKET(NOT_FOUND,"D-006","해당 티켓을 찾을 수 없습니다."),
+    TICKET_NOT_FOUND(NOT_FOUND,"D-006","해당 티켓을 찾을 수 없습니다."),
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT,"E-001","데이터가 이미 존재합니다."),
 

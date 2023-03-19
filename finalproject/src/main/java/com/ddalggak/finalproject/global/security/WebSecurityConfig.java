@@ -50,7 +50,11 @@ public class WebSecurityConfig {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		//http.authorizeRequests().anyRequest().authenticated();
 		http.authorizeRequests().antMatchers("/api/user/**").permitAll()
-			.antMatchers(HttpMethod.GET,"/api/blogs/**").permitAll()
+			.antMatchers(HttpMethod.GET,"/api/project/**").permitAll()
+			.antMatchers(HttpMethod.GET,"/api/task/**").permitAll()
+			.antMatchers(HttpMethod.GET,"/api/ticket/**").permitAll()
+
+
 			//                .antMatchers(HttpMethod.POST, "/api/logout").permitAll()
 			.antMatchers("/api/reply/**").permitAll()
 			.anyRequest().authenticated()
