@@ -44,11 +44,13 @@ public class TicketController {
 	// public ResponseEntity<List<TicketResponseDto>> getTickets(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 	// 	return ticketService.getTickets();
 	// }
-	// // 티켓 상세 조회
-	// @GetMapping("/{ticketId}")
-	// public ResponseEntity<TicketResponseDto> getTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	return ticketService.getTicket(ticketId, userDetails.getUser());
-	// }
+	// 티켓 상세 조회
+	@GetMapping("/{ticketId}")
+	public ResponseEntity<TicketResponseDto> getTicket(
+		@PathVariable Long ticketId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ticketService.getTicket(userDetails.getUser(), ticketId);
+	}
 	//
 	// // 티켓 수정
 	// @PatchMapping("/{ticketId}")
