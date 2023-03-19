@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
 import com.ddalggak.finalproject.domain.ticket.service.TicketService;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
@@ -51,14 +52,17 @@ public class TicketController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ticketService.getTicket(userDetails.getUser(), ticketId);
 	}
-	//
-	// // 티켓 수정
-	// @PatchMapping("/{ticketId}")
-	// public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	return ticketService.updateTicket(ticketId, userDetails.getUser());
-	// }
-	//
-	// // 티켓 삭제
+
+	// 티켓 수정
+	@PatchMapping("/{ticketId}")
+	public ResponseEntity<TicketResponseDto> updateTicket(
+		@PathVariable Long ticketId,
+		@RequestBody TicketRequestDto ticketRequestDto,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ticketService.updateTicket(ticketId, ticketRequestDto, userDetails.getUser());
+	}
+
+	// 티켓 삭제
 	// @DeleteMapping("/{ticketId}")
 	// public ResponseEntity deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 	// 	return ticketService.deleteTicket(ticketId, userDetails.getUser());
