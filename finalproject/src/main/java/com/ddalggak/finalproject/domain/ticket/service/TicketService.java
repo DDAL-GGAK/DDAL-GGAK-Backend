@@ -82,29 +82,31 @@ public class TicketService {
 		return ResponseEntity.ok().body(ticketResponseDto);
 	}
 
-	//
-	// // 티켓 수정하기 (티켓 수정이 가능했었나요? 일단 만들어 놓자!)
-	// @Transactional
-	// public ResponseEntity<TicketResponseDto> updateTicket(Long ticketId, TicketResponseDto ticketResponseDto, UserDetailsImpl userDetails) {
-	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
-	// 		() -> new CustomException(NOT_FOUND_TICKET)); // 권한에 접근할 수 없습니다 넣어도 될지 상의하기
-	// 	if (user.getNickname().equals(ticket.getUser().getNickname()))
-	// 		ticket.update(ticketResponseDto);
-	// 	else throw new CustomException(UNAUTHORIZED_USER);
-	// 	return ResponseEntity.ok().body(TicketResponseDto.of(ticket));
-	// }
-	//
-	// // 티켓 삭제하기
+
+	// 티켓 수정하기 (티켓 수정이 가능했었나요? 일단 만들어 놓자!)
+	@Transactional
+	public ResponseEntity<TicketResponseDto> updateTicket(Long ticketId,
+		TicketRequestDto ticketRequestDto, User user) {
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+			() -> new CustomException(NOT_FOUND_TICKET)); // 권한에 접근할 수 없습니다 넣어도 될지 상의하기
+
+		if (user.getNickname().equals(ticket.getOwner().getNickname()))
+			ticket.update(ticketRequestDto);
+		else throw new CustomException(UNAUTHORIZED_USER);
+		return ResponseEntity.ok().body(TicketResponseDto.of(ticket));
+	}
+
+	// 티켓 삭제하기
 	// @Transactional
 	// public ResponseEntity deleteTicket(Long ticketId, User user) {
 	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 	// 		() -> new CustomException(NOT_FOUND_TICKET));
-	// 	if (user.getNickname().equals(ticket.getUser().getNickname()))
+	// 	if (user.getNickname().equals(ticket.getOwner().getNickname()))
 	// 		ticketRepository.deleteById(ticketId);
 	// 	else throw new CustomException(UNAUTHORIZED_USER);
 	// 	return ResponseEntity.ok().body("티켓 삭제 성공");
 	// }
-	//
+
 	// // 티켓 완료하기 티켓에 가져오기
 
 }
