@@ -22,7 +22,7 @@ public class UserDetailsImpl implements UserDetails {
 		this.password = password;
 	}
 
-	public UserDetailsImpl getUser() {
+	public User getUser() {
 		return user;
 	}
 
