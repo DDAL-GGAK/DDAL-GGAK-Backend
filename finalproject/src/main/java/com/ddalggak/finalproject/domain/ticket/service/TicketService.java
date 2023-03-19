@@ -3,25 +3,16 @@ package com.ddalggak.finalproject.domain.ticket.service;
 import static com.ddalggak.finalproject.global.error.ErrorCode.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import com.ddalggak.finalproject.domain.task.entity.Task;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 import com.ddalggak.finalproject.domain.ticket.repository.TicketRepository;
 import com.ddalggak.finalproject.domain.user.entity.User;
-import com.ddalggak.finalproject.global.dto.SuccessCode;
-import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.error.CustomException;
-import com.ddalggak.finalproject.global.security.UserDetailsImpl;
+
 
 import lombok.RequiredArgsConstructor;
 
