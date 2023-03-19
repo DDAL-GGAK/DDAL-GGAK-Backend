@@ -28,18 +28,17 @@ public class TicketLog extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long logId;
 	@Column(nullable = false)
-	private String ticketLog;
+	private String logDescription; //logDescription 바꾸기
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ticketId")
 	private Ticket ticket;
 	@OneToMany(mappedBy = "ticket")
-	private List<TicketUser> ticketUserList = new ArrayList<>();
+	private List<User> owner = new ArrayList<>();
 
-
-	public TicketLog(TicketUser ticketUserList, Ticket ticket, String ticketLog) {
-		this.ticketUserList = (List<TicketUser>)ticketUserList;
+	public TicketLog(List<User> owner, Ticket ticket, String logDescription) {
+		this.owner = owner;
 		this.ticket = ticket;
-		this.ticketLog = ticketLog;
+		this.logDescription = logDescription;
 
 	}
 
