@@ -1,5 +1,6 @@
 package com.ddalggak.finalproject.domain.ticket.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -32,34 +33,33 @@ public class TicketController {
 	@Operation(summary = "post swagger", description = "Ticket 등록 post 메서드 체크")
 	@PostMapping
 	public ResponseEntity<TicketResponseDto> createTicket(
-		@AuthenticationPrincipal UserDetailsImpl userDetails, // 변경필요
-		// @PathVariable("ticketId") Long ticketId,	// 노란색 물결 해결하기, task 완성되면 변경하기
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody TicketResponseDto ticketResponseDto
-	) {
+	) throws IOException {
 		return ticketService.createTicket(ticketResponseDto, userDetails.getUser());
 	}
 
-	// 티켓 전체 조회 (테스크에 들어갈 내용) getTickets
-	@GetMapping
-	public ResponseEntity<List<TicketResponseDto>> getTickets(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.getTickets();
-	}
-	// 티켓 상세 조회
-	@GetMapping("/{ticketId}")
-	public ResponseEntity<TicketResponseDto> getTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.getTicket(ticketId, userDetails.getUser());
-	}
-
-	// 티켓 수정
-	@PatchMapping("/{ticketId}")
-	public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.updateTicket(ticketId, userDetails.getUser());
-	}
-
-	// 티켓 삭제
-	@DeleteMapping("/{ticketId}")
-	public ResponseEntity deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.deleteTicket(ticketId, userDetails.getUser());
-	}
+	// // 티켓 전체 조회 (테스크에 들어갈 내용) getTickets
+	// @GetMapping
+	// public ResponseEntity<List<TicketResponseDto>> getTickets(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	// 	return ticketService.getTickets();
+	// }
+	// // 티켓 상세 조회
+	// @GetMapping("/{ticketId}")
+	// public ResponseEntity<TicketResponseDto> getTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+	// 	return ticketService.getTicket(ticketId, userDetails.getUser());
+	// }
+	//
+	// // 티켓 수정
+	// @PatchMapping("/{ticketId}")
+	// public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+	// 	return ticketService.updateTicket(ticketId, userDetails.getUser());
+	// }
+	//
+	// // 티켓 삭제
+	// @DeleteMapping("/{ticketId}")
+	// public ResponseEntity deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+	// 	return ticketService.deleteTicket(ticketId, userDetails.getUser());
+	// }
 }
 

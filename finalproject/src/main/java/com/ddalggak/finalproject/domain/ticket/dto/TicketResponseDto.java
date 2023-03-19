@@ -1,6 +1,7 @@
 package com.ddalggak.finalproject.domain.ticket.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 
@@ -18,6 +19,7 @@ public class TicketResponseDto {
 	private double difficulty;
 	private String assigned;
 	private LocalDateTime expiredAt;
+	private List<TicketLogResponseDto> logs;
 
 	@Builder
 	public TicketResponseDto(Ticket t) {
@@ -28,6 +30,7 @@ public class TicketResponseDto {
 		this.difficulty = t.getDifficulty();
 		this.assigned = t.getAssigned();
 		this.expiredAt = t.getExpiredAt();
+		this.logs = logs;
 	}
 
 	public static TicketResponseDto of(Ticket ticket) {
