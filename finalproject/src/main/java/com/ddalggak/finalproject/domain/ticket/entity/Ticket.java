@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,9 +16,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.ddalggak.finalproject.domain.task.entity.Task;
+import com.ddalggak.finalproject.domain.ticket.comment.entity.Comment;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
-import com.ddalggak.finalproject.domain.user.entity.Label;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.global.entity.BaseEntity;
 
@@ -58,25 +59,26 @@ public class Ticket extends BaseEntity {
 	// user 연관관계 // FE에서 user -> onwer 로 변경요청
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
-	private User owner;
+	private User user;
 	// @OneToMany(mappedBy = "ticket")
 	// private List<User> User = new ArrayList<>();
 
 	// label 연관관계 //티켓에 라벨이 필요한가? // 단방향으로 연관관계? 양방향?
-	@OneToMany(mappedBy = "ticket")
-	private List<Label> labelList = new ArrayList<>();
+	@OneToMany(mappedBy = "Comment", cascade = CascadeType.REMOVE)
+	private List<Comment> comments = new ArrayList<>();
 
-	public Ticket(TicketResponseDto ticketResponseDto, User owner) {
+	public Ticket(TicketResponseDto ticketResponseDto, User user) {
 		this.ticketTitle = ticketResponseDto.getTicketTitle();
 		this.ticketDescription = ticketResponseDto.getTicketDescription();
 		this.priority = ticketResponseDto.getPriority();
 		this.difficulty = ticketResponseDto.getDifficulty();
 		this.assigned = ticketResponseDto.getAssigned();
 		this.expiredAt = ticketResponseDto.getExpiredAt();
-		this.owner = owner;
+		this.user = user;
 	}
 	public void update(TicketRequestDto ticketRequestDto) {
-		this.ticketDescription =
-			ticketRequestDto.getTicketDescription();
+		this.ticketTitle = ticketRequestDto.getTicketTitle();
+		this.ticketDescription = ticketRequestDto.getTicketDescription();
+		// this.user = user;
 	}
 }
