@@ -60,11 +60,12 @@ public class JwtUtil {
 		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}
 
-	public String createToken(String email) {
+	public String createToken(Long userId, String email) {
 		Date date = new Date();
 
 		return BEARER_PREFIX +
 			Jwts.builder()
+				.setSubject(Long.toString(userId))
 				.setSubject(email)
 				.setExpiration(new Date(date.getTime() + TOKEN_TIME))
 				.setIssuedAt(date)
