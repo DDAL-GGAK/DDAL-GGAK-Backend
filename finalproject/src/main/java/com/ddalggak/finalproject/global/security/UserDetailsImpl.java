@@ -13,11 +13,13 @@ import com.ddalggak.finalproject.domain.user.role.UserRole;
 public class UserDetailsImpl implements UserDetails {
 
 	private final User user;
+	private final String email;
 	private final String nickname;
 	private final String password;
 
-	public UserDetailsImpl(User user, String nickname, String password) {
+	public UserDetailsImpl(User user, String nickname, String password, String email) {
 		this.user = user;
+		this.email = email;
 		this.nickname = nickname;
 		this.password = password;
 	}
@@ -36,6 +38,10 @@ public class UserDetailsImpl implements UserDetails {
 		authorities.add(simpleGrantedAuthority);
 
 		return authorities;
+	}
+
+	public String getEmail() {
+		return this.email;
 	}
 
 	@Override
