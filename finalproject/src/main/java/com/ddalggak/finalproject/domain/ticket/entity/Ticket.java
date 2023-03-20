@@ -39,12 +39,13 @@ public class Ticket extends BaseEntity {
 	// 티켓 내용 notnull
 	@Column(nullable = true)
 	private String ticketDescription;
+
 	// 중요도 null 허용 -> int 로 변경 필요
 	@Column(nullable = true)
-	private double priority;
+	private Long priority;
 	// 난이도  null 허용 -> int 로 변경 필요
 	@Column(nullable = true)
-	private double difficulty;
+	private Long difficulty;
 	// 태그(이름 변경 해야함)  null 허용
 	@Column(nullable = true)
 	private String assigned;
@@ -66,14 +67,24 @@ public class Ticket extends BaseEntity {
 	@OneToMany(mappedBy = "ticket")
 	private List<Label> labelList = new ArrayList<>();
 
+	// public Ticket(TicketResponseDto ticketResponseDto, User owner) {
+	// 	this.ticketTitle = ticketResponseDto.getTicketTitle();
+	// 	this.ticketDescription = ticketResponseDto.getTicketDescription();
+	//
+	// 	this.assigned = ticketResponseDto.getAssigned();
+	// 	this.expiredAt = ticketResponseDto.getExpiredAt();
+	// 	this.owner = owner;
+	// }
+
 	public Ticket(TicketResponseDto ticketResponseDto, User owner) {
 		this.ticketTitle = ticketResponseDto.getTicketTitle();
 		this.ticketDescription = ticketResponseDto.getTicketDescription();
-		this.priority = ticketResponseDto.getPriority();
-		this.difficulty = ticketResponseDto.getDifficulty();
+		// this.priority = ticketResponseDto.getPriority();
+		// this.difficulty = ticketResponseDto.getDifficulty();
 		this.assigned = ticketResponseDto.getAssigned();
 		this.expiredAt = ticketResponseDto.getExpiredAt();
 		this.owner = owner;
+		// this.labelList = labelList;
 	}
 	public void update(TicketRequestDto ticketRequestDto) {
 		this.ticketDescription =
