@@ -8,8 +8,13 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import com.ddalggak.finalproject.global.security.UserDetailsServiceImpl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,6 +34,7 @@ public class JwtUtil {
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_TIME = 60 * 60 * 9 * 1000L;
+	private final UserDetailsServiceImpl userDetailsService;
 
 	@Value("${jwt.secret.key}")
 	private String secretKey;
@@ -47,6 +53,11 @@ public class JwtUtil {
 			return bearerToken.substring(7);
 		}
 		return null;
+	}
+
+	public Authentication createAuthentication(String email) {
+		UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}
 
 	public String createToken(String email) {
@@ -80,5 +91,4 @@ public class JwtUtil {
 	public Claims getUserToken(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 	}
-
 }
