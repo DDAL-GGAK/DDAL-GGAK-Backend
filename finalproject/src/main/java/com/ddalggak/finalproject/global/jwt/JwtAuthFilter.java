@@ -38,15 +38,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				jwtExceptionHandler(response, ErrorCode.INVALID_AUTH_TOKEN);
 				return;
 			}
-			Claims info = jwtUtil.getUserToken(token);
+			Claims info = jwtUtil.getUserInfo(token);
 			setAuthentication(info.getSubject());
 		}
 		filterChain.doFilter(request, response);
 	}
 
-	public void setAuthentication(String username) {
+	public void setAuthentication(String email) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		Authentication authentication = jwtUtil.createAuthentication(username);
+		Authentication authentication = jwtUtil.createAuthentication(email);
 		context.setAuthentication(authentication);
 
 		SecurityContextHolder.setContext(context);
