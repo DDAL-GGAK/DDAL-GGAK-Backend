@@ -21,8 +21,10 @@ import com.ddalggak.finalproject.domain.user.role.UserRole;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity(name = "Users")
 public class User {
@@ -38,6 +40,9 @@ public class User {
 
 	@Column(nullable = false)
 	private String password;
+
+	@Column(nullable = true)
+	private String profile;
 
 	@Column
 	@Enumerated(value = EnumType.STRING)
@@ -57,5 +62,6 @@ public class User {
 		this.email = email;
 		this.nickname = nickname;
 		this.password = password;
+		this.role = UserRole.USER;
 	}
 }
