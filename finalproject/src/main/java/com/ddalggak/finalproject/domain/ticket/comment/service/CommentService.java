@@ -2,8 +2,6 @@ package com.ddalggak.finalproject.domain.ticket.comment.service;
 
 import static com.ddalggak.finalproject.global.error.ErrorCode.*;
 
-import java.util.Optional;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,14 +43,13 @@ public class CommentService {
 	public ResponseEntity<SuccessResponseDto> createComment(UserDetailsImpl userDetails, Long ticketId,
 		CommentResponseDto commentResponseDto) {
 		User user = userDetails.getUser();
-		Optional<Ticket> ticket = ticketRepository.findById(ticketId);
-		if (ticket.isEmpty()) {
-			throw new CustomException(TICKET_NOT_FOUND);
-		}
+		Ticket ticket = getTicket(ticketId);
+		// if (ticket) {
+		// 	throw new CustomException(TICKET_NOT_FOUND);
+		// }
 		// comment 작성
-		Comment comment = new Comment(user, ticket, commentResponseDto);
-			commentRepository.save(comment);
-		ResponseEntity.ok().body(comment);
+		Comment comment =  new Comment(user, ticket, commentResponseDto);
+		commentRepository.save(comment);
 		// 상태 반환
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}

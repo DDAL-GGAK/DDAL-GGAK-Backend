@@ -1,5 +1,7 @@
 package com.ddalggak.finalproject.domain.ticket.comment.dto;
 
+import java.time.LocalDateTime;
+
 import com.ddalggak.finalproject.domain.ticket.comment.entity.Comment;
 import com.ddalggak.finalproject.domain.user.entity.User;
 
@@ -11,13 +13,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentResponseDto {
 	private Long commentId;
-	private String description;
+	private String comment;
+	// private String description;
+	private String nickname;
+	private LocalDateTime creatAt;
+	private LocalDateTime modifiedAt;
 	private User user;
 
 	@Builder
 	public CommentResponseDto(Comment c) {
 		this.commentId = c.getCommentId();
-		this.description = getDescription();
+		this.comment = c.getComments();
+		// this.description = getDescription();
+		this.nickname = c.getUser().getNickname();
+		this.creatAt = c.getCreatedAt();
+		this.modifiedAt = c.getModifiedAt();
 		this.user = c.getUser();
 	}
 }
