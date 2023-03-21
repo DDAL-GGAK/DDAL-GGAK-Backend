@@ -43,7 +43,7 @@ public class TicketService {
 	@Transactional
 	public ResponseEntity<SuccessResponseDto> createTicket(TicketResponseDto ticketResponseDto,
 		User user) {
-		System.out.println("--------user = " + user.getNickname());
+		System.out.println("--------user = " + user.getEmail());
 		Ticket ticket = ticketRepository.saveAndFlush(new Ticket(ticketResponseDto, user));
 		ResponseEntity.ok().body(TicketResponseDto.of(ticket));
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
@@ -107,7 +107,7 @@ public class TicketService {
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 			() -> new CustomException(TICKET_NOT_FOUND)); // 권한에 접근할 수 없습니다 넣어도 될지 상의하기
 
-		if (user.getNickname().equals(ticket.getUser().getNickname()))
+		if (user.getEmail().equals(ticket.getUser().getEmail()))
 			ticket.update(ticketRequestDto);
 		else throw new CustomException(UNAUTHORIZED_USER);
 		ResponseEntity.ok().body(TicketResponseDto.of(ticket));
@@ -120,7 +120,7 @@ public class TicketService {
 	public ResponseEntity<?> deleteTicket(Long ticketId, User user) {
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 			() -> new CustomException(TICKET_NOT_FOUND));
-		if (user.getNickname().equals(ticket.getUser().getNickname()))
+		if (user.getEmail().equals(ticket.getUser().getEmail()))
 			ticketRepository.deleteById(ticketId);
 		else throw new CustomException(UNAUTHORIZED_USER);
 		ResponseEntity.ok().body("티켓 삭제 성공");

@@ -67,9 +67,9 @@ public class CommentService {
 		CommentResponseDto commentResponseDto, UserDetailsImpl userDetails) {
 		User user = userDetails.getUser();
 		Comment comment = commentRepository.findById(ticketId).orElseThrow(
-			() -> new CustomException(LOG_NOT_FOUND)); // 권한에 접근할 수 없습니다 넣어도 될지 상의하기
+			() -> new CustomException(COMMENT_NOT_FOUND));
 
-		if (user.getNickname().equals(log.getName()))
+		if (user.getEmail().equals(log.getName()))
 			comment.update(commentResponseDto);
 		else throw new CustomException(UNAUTHORIZED_USER);
 		// return ResponseEntity.ok().body(TicketResponseDto.of(ticket));
