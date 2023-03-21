@@ -13,6 +13,9 @@ public enum SuccessCode {
 	/*200 OK : 에러 없이 전송 성공*/
 	IMAGE_SUCCESSFULLY_DELETED(HttpStatus.OK, "succesfully deleted"),
 	SUCCESS_LOGIN(HttpStatus.OK, "login success"),
+	SUCCESS_LOGOUT(HttpStatus.OK, "logout success"),
+	SUCCESS_UPLOAD(HttpStatus.OK, "upload success"),
+	SUCCESS_SEND(HttpStatus.OK, "send success"),
 
 	/*201 CREATED : REQUEST COMPLETE, RESOURCE SUCCESSFULLY CREATED*/
 	CREATED_SUCCESSFULLY(HttpStatus.CREATED, "successfully joined");
