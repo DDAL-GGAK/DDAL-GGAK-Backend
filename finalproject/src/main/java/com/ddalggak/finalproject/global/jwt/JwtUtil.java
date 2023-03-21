@@ -21,7 +21,6 @@ import com.ddalggak.finalproject.global.error.CustomException;
 import com.ddalggak.finalproject.global.error.ErrorCode;
 import com.ddalggak.finalproject.global.jwt.token.dto.AccessTokenResponseDto;
 import com.ddalggak.finalproject.global.jwt.token.entity.RefreshToken;
-import com.ddalggak.finalproject.global.jwt.token.repository.RefreshTokenRepository;
 import com.ddalggak.finalproject.global.security.UserDetailsServiceImpl;
 
 import io.jsonwebtoken.Claims;
@@ -39,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-	private final RefreshTokenRepository refreshTokenRepository;
+	// private final RefreshTokenRepository refreshTokenRepository;
 	private final UserRepository userRepository;
 	private final UserDetailsServiceImpl userDetailsService;
 	public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -83,10 +82,10 @@ public class JwtUtil {
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		RefreshToken refreshTokenObj = RefreshToken.builder()
 			.user(user)
-			.value(refreshToken)
+			.token(refreshToken)
 			.build();
 
-		refreshTokenRepository.save(refreshTokenObj);
+		// refreshTokenRepository.save(refreshTokenObj);
 
 		return AccessTokenResponseDto.builder()
 			.accessToken(accessToken)
@@ -123,11 +122,11 @@ public class JwtUtil {
 
 	public void logoutToken(Long userId) {
 		Long now = new Date().getTime();
-		refreshTokenRepository.deleteById(userId);
+		// refreshTokenRepository.deleteById(userId);
 	}
 
 	public void deleteToken(Long userId) {
-		refreshTokenRepository.deleteById(userId);
+		// refreshTokenRepository.deleteById(userId);
 	}
 
 	public boolean validateToken(String token) {
