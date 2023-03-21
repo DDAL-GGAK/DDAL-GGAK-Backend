@@ -94,7 +94,7 @@ public class TicketService {
 		List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
 		List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
 		for (Comment c : commentList) {
-			CommentResponseDto commentDto = new CommentResponseDto(c);
+			commentResponseDtoList.add(new CommentResponseDto(c));
 		}
 		return commentResponseDtoList;
 	}
