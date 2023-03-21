@@ -8,6 +8,9 @@ import lombok.Getter;
 @Getter
 public class ProjectBriefResponseDto {
 
+	@Schema(name = "프로젝트 id", example = "1")
+	public Long id;
+
 	@Schema(name = "프로젝트 썸네일", example = "http://ddalggak.ap-northeast-1.amazonaws.com/thumbnail/projects/~.jpg")
 	public String thumbnail;
 
@@ -15,6 +18,7 @@ public class ProjectBriefResponseDto {
 	public String projectTitle;
 
 	public ProjectBriefResponseDto(Project project) {
+		this.id = project.getProjectId();
 		this.thumbnail = project.getThumbnail();
 		this.projectTitle = project.getProjectTitle();
 	}
