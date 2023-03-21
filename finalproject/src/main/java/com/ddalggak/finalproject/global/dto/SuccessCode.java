@@ -16,9 +16,12 @@ public enum SuccessCode {
 	SUCCESS_LOGOUT(HttpStatus.OK, "logout success"),
 	SUCCESS_UPLOAD(HttpStatus.OK, "upload success"),
 	SUCCESS_SEND(HttpStatus.OK, "send success"),
+	DELETED_SUCCESSFULLY(HttpStatus.OK, "successfully deleted"),
 
 	/*201 CREATED : REQUEST COMPLETE, RESOURCE SUCCESSFULLY CREATED*/
-	CREATED_SUCCESSFULLY(HttpStatus.CREATED, "successfully joined");
+	CREATED_SUCCESSFULLY(HttpStatus.CREATED, "successfully created"),
+	JOINED_SUCCESSFULLY(HttpStatus.CREATED, "successfully joined"),
+	;
 
 	private final HttpStatus httpStatus;
 	private final String detail;
