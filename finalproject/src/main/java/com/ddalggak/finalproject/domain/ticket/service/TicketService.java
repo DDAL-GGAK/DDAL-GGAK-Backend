@@ -107,7 +107,7 @@ public class TicketService {
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 			() -> new CustomException(TICKET_NOT_FOUND)); // 권한에 접근할 수 없습니다 넣어도 될지 상의하기
 
-		if (user.getUserId().equals(ticket.getUser().getNickname()))
+		if (user.getNickname().equals(ticket.getUser().getNickname()))
 			ticket.update(ticketRequestDto);
 		else throw new CustomException(UNAUTHORIZED_USER);
 		ResponseEntity.ok().body(TicketResponseDto.of(ticket));
