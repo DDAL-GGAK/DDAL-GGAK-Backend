@@ -34,6 +34,6 @@ public class RefreshToken {
 	private User user;
 
 	@Column(name = "token_value", nullable = false)
-	private String value;
+	private String token;
 
 }
