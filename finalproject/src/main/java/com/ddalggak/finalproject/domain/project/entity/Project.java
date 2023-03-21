@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,17 +31,19 @@ public class Project extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long projectId;
 
+	@Column(nullable = false)
 	private String projectTitle;
 
 	private String thumbnail;
 
+	@Column(nullable = false)
 	private LocalDate expiredAt;
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
 	@BatchSize(size = 500)
 	private List<ProjectUser> projectUserList = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project")
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
 	@BatchSize(size = 500)
 	private List<Task> taskList = new ArrayList<>();
 
@@ -59,9 +62,13 @@ public class Project extends BaseEntity {
 			.build();
 	}
 
-	//연관관계 편의 메서드
+	//연관관계 편의 메소드
 	public void addProjectUser(ProjectUser projectUser) {
 		projectUserList.add(projectUser);
 		projectUser.addProject(this);
+	}
+
+	public void addTask(Task task) {
+		taskList.add(task);
 	}
 }

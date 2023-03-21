@@ -24,7 +24,7 @@ public class ProjectResponseDto {
 	public LocalDate expiredAt;
 	@Schema(name = "프로젝트 관리자")
 	public String projectLeader;
-	@Schema(name = "프로젝트 참여자")
+	@Schema(name = "프로젝트 내 참여자 정보")
 	public List<UserResponseDto> participants;
 	@Schema(name = "프로젝트 내 task 간단 정보")
 	public List<TaskBriefResponseDto> tasks;
@@ -36,7 +36,7 @@ public class ProjectResponseDto {
 			.expiredAt(project.getExpiredAt())
 			.projectLeader(project.getCreatedBy())
 			.participants(project.getProjectUserList().stream().map(UserResponseDto::new).collect(Collectors.toList()))
-			// .tasks(TaskBriefResponseDto.of(project.getTaskList()))
+			.tasks(project.getTaskList().stream().map(TaskBriefResponseDto::new).collect(Collectors.toList()))
 			.build();
 	}
 }
