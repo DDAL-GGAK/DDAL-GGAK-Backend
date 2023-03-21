@@ -40,7 +40,7 @@ public class ProjectService {
 		User user = userRepository.findByEmail(email).orElseThrow(
 			() -> new UserException(ErrorCode.MEMBER_NOT_FOUND)
 		);
-		//1. projectRequestDto와 user로 projectUserDto 생성
+		//1. user로 projectUserRequestDto 생성
 		ProjectUserRequestDto projectUserRequestDto = ProjectUserRequestDto.create(user);
 		//2. projectUserDto로 projectUser생성
 		ProjectUser projectUser = ProjectUser.create(projectUserRequestDto);

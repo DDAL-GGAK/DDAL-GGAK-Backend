@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.ddalggak.finalproject.domain.task.entity.Task;
+import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,5 +36,9 @@ public class Label {
 
 	@OneToMany(mappedBy = "label")
 	private List<User> userList = new ArrayList<>();
+
+	@ManyToOne
+	@JoinColumn(name = "ticket")
+	private Ticket ticket;
 
 }
