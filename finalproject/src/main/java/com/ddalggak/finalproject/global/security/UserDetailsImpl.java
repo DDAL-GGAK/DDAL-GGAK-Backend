@@ -1,26 +1,24 @@
 package com.ddalggak.finalproject.global.security;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.ddalggak.finalproject.domain.user.entity.User;
-import com.ddalggak.finalproject.domain.user.role.UserRole;
 
+import lombok.Getter;
+
+@Getter
 public class UserDetailsImpl implements UserDetails {
 
 	private final User user;
 	private final String email;
-	private final String nickname;
 	private final String password;
 
-	public UserDetailsImpl(User user, String nickname, String password, String email) {
+	public UserDetailsImpl(User user, String email, String password) {
 		this.user = user;
 		this.email = email;
-		this.nickname = nickname;
 		this.password = password;
 	}
 
@@ -30,23 +28,19 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		UserRole role = user.getRole();
-		String authority = role.getAuthority();
-
-		SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
-		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(simpleGrantedAuthority);
-
-		return authorities;
-	}
-
-	public String getEmail() {
-		return this.email;
+		// UserRole role = user.getRole();
+		// String authority = role.getAuthority();
+		//
+		// SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
+		// Collection<GrantedAuthority> authorities = new ArrayList<>();
+		// authorities.add(simpleGrantedAuthority);
+		//
+		return null;
 	}
 
 	@Override
 	public String getUsername() {
-		return this.nickname;
+		return this.email;
 	}
 
 	@Override
