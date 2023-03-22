@@ -13,21 +13,14 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProjectUserRequestDto {
 
-	@Schema(name = "project")
+	@Schema(name = "project entity", description = "프로젝트 정보가 들어있는 엔티티")
 	public Project project;
 
-	@Schema(name = "user", defaultValue = "anonymous")
+	@Schema(name = "user entity", defaultValue = "anonymous")
 	public User user;
 
 	public static ProjectUserRequestDto create(User user) {
 		return ProjectUserRequestDto.builder()
-			.user(user)
-			.build();
-	}
-
-	public static ProjectUserRequestDto join(Project project, User user) {
-		return ProjectUserRequestDto.builder()
-			.project(project)
 			.user(user)
 			.build();
 	}
