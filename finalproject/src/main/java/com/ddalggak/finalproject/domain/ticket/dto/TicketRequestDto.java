@@ -22,6 +22,6 @@ public class TicketRequestDto {
 	private String assigned;
 	@Schema(name = "티켓 마감 날짜")
 	private LocalDateTime expiredAt;
-	@Schema(name = "티켓 작성자")
-	private List<CommentResponseDto> logs;
+	@Schema(name = "댓글 작성")
+	private String comment;
 }

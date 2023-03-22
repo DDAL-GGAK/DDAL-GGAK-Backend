@@ -25,7 +25,7 @@ public class Comment extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long commentId;
 	@Column(nullable = false)
-	private String comments; //logDescription 바꾸기
+	private String comment; //logDescription 바꾸기
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ticketId")
 	private Ticket ticket;
@@ -37,10 +37,11 @@ public class Comment extends BaseEntity {
 		// this.owner = this.getOwner();
 		this.user = user;
 		this.ticket = ticket;
-		this.comments = String.valueOf(comments);
+		this.comment = comments.getComment();
 
 	}
 
-	public void update(CommentResponseDto commentResponseDto) {
+	public void update(String comment) {
+		this.comment = comment;
 	}
 }

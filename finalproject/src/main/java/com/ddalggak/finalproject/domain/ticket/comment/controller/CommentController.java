@@ -22,17 +22,18 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Log Controller", description = "로그 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{ticketId}")
+@RequestMapping("/api/{ticketId}/comment")
 public class CommentController {
 	private final CommentService commentService;
 
 	// 댓글 등록
 	@Operation(summary = "ticket comment", description = "comment 등록 post 메서드 체크")
-	@PostMapping("/comment")
-	public ResponseEntity<SuccessResponseDto> createComment
+	@PostMapping("")
+	public ResponseEntity<?> createComment
 	(	@PathVariable Long ticketId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody CommentResponseDto commentResponseDto) {
+		@RequestBody CommentResponseDto commentResponseDto
+	) {
 		return commentService.createComment(userDetails, ticketId, commentResponseDto);
 	}
 
@@ -48,17 +49,16 @@ public class CommentController {
 	// 댓글 수정
 	@Operation(summary = "patch ticket comment", description = "comment 수정 get 메서드 체크")
 	@PatchMapping("/{commentId}")
-	public ResponseEntity<?> updateComment(
+	public ResponseEntity<SuccessResponseDto> updateComment(
 		@PathVariable Long ticketId,
 		@RequestBody CommentResponseDto commentResponseDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-
 		return commentService.updateComment(ticketId, commentResponseDto, userDetails);
 	}
 	// 댓글 삭제
 	@Operation(summary = "delete ticket comment", description = "comment 삭제 delete 메서드 체크")
 	@DeleteMapping("/{commentId}")
-	public ResponseEntity<?> deleteComment(
+	public ResponseEntity<SuccessResponseDto> deleteComment(
 		@PathVariable Long ticketId,
 		@PathVariable Long commentId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {

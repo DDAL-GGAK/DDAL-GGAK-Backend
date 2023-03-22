@@ -69,8 +69,8 @@ public class CommentService {
 		Comment comment = commentRepository.findById(ticketId).orElseThrow(
 			() -> new CustomException(COMMENT_NOT_FOUND));
 
-		if (user.getEmail().equals(log.getName()))
-			comment.update(commentResponseDto);
+		if (user.getEmail().equals(comment.getUser().getEmail()))
+			comment.update(commentResponseDto.getComment());
 		else throw new CustomException(UNAUTHORIZED_USER);
 		// return ResponseEntity.ok().body(TicketResponseDto.of(ticket));
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
@@ -88,7 +88,7 @@ public class CommentService {
 	// 	return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	// }
 	@Transactional
-	public ResponseEntity<?> deleteComment(UserDetailsImpl userDetails, Long ticketId, Long commentId) {
+	public ResponseEntity<SuccessResponseDto> deleteComment(UserDetailsImpl userDetails, Long ticketId, Long commentId) {
 		Ticket ticket = getTicket(ticketId);
 		Comment comment = getComment(commentId);
 		checkValidation(ticket, comment, userDetails);

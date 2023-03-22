@@ -64,8 +64,8 @@ public class Ticket extends BaseEntity {
 	// private List<User> User = new ArrayList<>();
 
 	// label 연관관계 //티켓에 라벨이 필요한가? // 단방향으로 연관관계? 양방향?
-	@OneToMany(mappedBy = "Comment", cascade = CascadeType.REMOVE)
-	private List<Comment> comments = new ArrayList<>();
+	// @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
+	// private List<Comment> comment = new ArrayList<>();
 
 	public Ticket(TicketResponseDto ticketResponseDto, User user) {
 		this.ticketTitle = ticketResponseDto.getTicketTitle();
@@ -75,10 +75,15 @@ public class Ticket extends BaseEntity {
 		this.assigned = ticketResponseDto.getAssigned();
 		this.expiredAt = ticketResponseDto.getExpiredAt();
 		this.user = user;
+		// this.comment = ticketResponseDto.getComments();
 	}
 	public void update(TicketRequestDto ticketRequestDto) {
 		this.ticketTitle = ticketRequestDto.getTicketTitle();
 		this.ticketDescription = ticketRequestDto.getTicketDescription();
+		this.priority = ticketRequestDto.getPriority();
+		this.difficulty = ticketRequestDto.getDifficulty();
+		this.assigned = ticketRequestDto.getAssigned();
+		this.expiredAt = ticketRequestDto.getExpiredAt();
 		// this.user = user;
 	}
 }

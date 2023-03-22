@@ -17,8 +17,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.ddalggak.finalproject.domain.user.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ddalggak.finalproject.global.jwt.JwtAuthFilter;
+import com.ddalggak.finalproject.global.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,13 +28,13 @@ import lombok.RequiredArgsConstructor;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class WebSecurityConfig {
 	private final JwtUtil jwtUtil;
-	private final ObjectMapper om;
-	private final UserRepository userRepository;
+
 	//
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		// h2-console 사용 및 resources 접근 허용 설정
@@ -42,6 +42,7 @@ public class WebSecurityConfig {
 			//.requestMatchers(PathRequest.toH2Console())
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// CSRF 설정
@@ -49,26 +50,30 @@ public class WebSecurityConfig {
 		// 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		//http.authorizeRequests().anyRequest().authenticated();
-		http.authorizeRequests().antMatchers("/api/user/**").permitAll()
-			.antMatchers(HttpMethod.GET,"/api/project/**").permitAll()
-			.antMatchers(HttpMethod.GET,"/api/task/**").permitAll()
-			.antMatchers(HttpMethod.GET,"/api/ticket/**").permitAll()
-
+		http.authorizeRequests()
+			.antMatchers("/api/auth/**")
+			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/project/**")
+			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/task/**")
+			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/ticket/**")
+			.permitAll()
 
 			//                .antMatchers(HttpMethod.POST, "/api/logout").permitAll()
-			.antMatchers("/api/reply/**").permitAll()
-			.anyRequest().authenticated()
 			// JWT 인증/인가를 사용하기 위한 설정
-			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class); //    private final JwtUtil jwtUtil; 추가하기!
+			.and()
+			.addFilterBefore(new JwtAuthFilter(jwtUtil),
+				UsernamePasswordAuthenticationFilter.class); //    private final JwtUtil jwtUtil; 추가하기!
 		http.cors();
 		// 로그인 사용
 		http.formLogin().permitAll();// 로그인 페이지가 있을 경우 넣기!.loginPage(".api/user/login-page").permitAll();
 		// 로그인 실패
-		http.exceptionHandling().accessDeniedPage("/api/user/login");
+		http.exceptionHandling().accessDeniedPage("/api/auth/login");
 
 		http.logout()//.permitAll() // 로그아웃 기능 작동함
 			.logoutUrl("Logout") // 로그아웃 처리 URL, default: /logout, 원칙적으로 post 방식만 지원
-			.logoutSuccessUrl("/api/user/login") // 로그아웃 성공 후 이동페이지
+			.logoutSuccessUrl("/api/auth/login") // 로그아웃 성공 후 이동페이지
 			.deleteCookies("JSESSIONID", "remember-me");
 
 		return http.build();
@@ -94,7 +99,7 @@ public class WebSecurityConfig {
 	// 예비 요청에 대한 처리를 해주게 됩니다.
 	// CorsFilter의 동작 과정이 궁금하시면, CorsFilter의 소스코드를 들어가 보세요!
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource(){
+	public CorsConfigurationSource corsConfigurationSource() {
 
 		CorsConfiguration config = new CorsConfiguration();
 

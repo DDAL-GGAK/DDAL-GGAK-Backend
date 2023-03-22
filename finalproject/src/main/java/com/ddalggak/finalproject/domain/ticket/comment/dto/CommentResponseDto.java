@@ -16,18 +16,18 @@ public class CommentResponseDto {
 	private String comment;
 	// private String description;
 	private String email;
-	private LocalDateTime creatAt;
-	private LocalDateTime modifiedAt;
-	private User user;
+	private LocalDateTime createdAt;
+	// private LocalDateTime modifiedAt;
+	// private User user;
 
 	@Builder
 	public CommentResponseDto(Comment c) {
 		this.commentId = c.getCommentId();
-		this.comment = c.getComments();
+		this.comment = c.getComment();
 		// this.description = getDescription();
 		this.email = c.getUser().getEmail();
-		this.creatAt = c.getCreatedAt();
-		this.modifiedAt = c.getModifiedAt();
-		this.user = c.getUser();
+		this.createdAt = c.getCreatedAt();
+		// this.modifiedAt = c.getModifiedAt();
+		// this.user = c.getUser();
 	}
 }
