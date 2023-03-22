@@ -65,7 +65,7 @@ public class TicketController {
 
 	// 티켓 삭제
 	@Operation(summary = "delete ticket", description = "Ticket 삭제 delete 메서드 체크")
-	@PostMapping("/ticket/{ticketId}")
+	@DeleteMapping("/ticket/{ticketId}")
 	public ResponseEntity<?> deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ticketService.deleteTicket(ticketId, userDetails.getUser());
 	}
