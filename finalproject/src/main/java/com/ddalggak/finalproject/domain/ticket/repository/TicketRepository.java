@@ -1,15 +1,13 @@
 package com.ddalggak.finalproject.domain.ticket.repository;
 
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.stereotype.Repository;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
-
+@Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-	// 테스크 티켓 조회 (테스크로 수정 필요)
-	List<Ticket> findAllByTicketOrderByCratedAtDesc(Ticket ticket);
 
-	// 티켓 상세 조회
-	List<Ticket> findAllByOrderByModifiedAtDesc();
+	// List<Ticket> findAllByTicketOrderByCratedAtDesc(Ticket ticket);
+
+	// List<Ticket> findAllByOrderByModifiedAtDesc();
 }
