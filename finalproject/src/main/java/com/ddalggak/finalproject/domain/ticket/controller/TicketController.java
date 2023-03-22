@@ -35,7 +35,7 @@ public class TicketController {
 	@PostMapping("/ticket")
 	public ResponseEntity<?> createTicket(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody TicketResponseDto ticketResponseDto) throws IOException {
+		@RequestBody TicketResponseDto ticketResponseDto) {
 		return ticketService.createTicket(ticketResponseDto, userDetails.getUser());
 	}
 
@@ -46,16 +46,16 @@ public class TicketController {
 	// }
 	// 티켓 상세 조회
 	@Operation(summary = "get ticket", description = "Ticket 상세조회 get 메서드 체크")
-	@GetMapping("/{ticketId}")
-	public ResponseEntity<SuccessResponseDto> getTicket(
+	@GetMapping("/ticket/{ticketId}")
+	public ResponseEntity<TicketResponseDto> getTicket(
 		@PathVariable Long ticketId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.getTicket(ticketId);
+		return ticketService.getTicket(ticketId, userDetails.getUser().getEmail());
 	}
 
 	// 티켓 수정
 	@Operation(summary = "patch ticket", description = "Ticket 수정 patch 메서드 체크")
-	@PatchMapping("/{ticketId}")
+	@PatchMapping("/ticket/{ticketId}")
 	public ResponseEntity<SuccessResponseDto> updateTicket(
 		@PathVariable Long ticketId,
 		@RequestBody TicketRequestDto ticketRequestDto,
@@ -65,7 +65,7 @@ public class TicketController {
 
 	// 티켓 삭제
 	@Operation(summary = "delete ticket", description = "Ticket 삭제 delete 메서드 체크")
-	@DeleteMapping("/{ticketId}")
+	@PostMapping("/ticket/{ticketId}")
 	public ResponseEntity<?> deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ticketService.deleteTicket(ticketId, userDetails.getUser());
 	}

@@ -45,7 +45,7 @@ public class TicketService {
 		User user) {
 		System.out.println("--------user = " + user.getEmail());
 		Ticket ticket = ticketRepository.saveAndFlush(new Ticket(ticketResponseDto, user));
-		ResponseEntity.ok().body(TicketResponseDto.of(ticket));
+		// ResponseEntity.ok().body(TicketResponseDto.of(ticket));
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
 	// public ResponseEntity<TicketResponseDto> createTicket(
@@ -80,14 +80,14 @@ public class TicketService {
 
 	// 티켓 상세 조회
 	@Transactional
-	public ResponseEntity<SuccessResponseDto> getTicket(Long ticketId) {
+	public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, String email) {
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 			() ->  new CustomException(TICKET_NOT_FOUND));
 
 		List<CommentResponseDto> commentList = getComment(ticket);
 		TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentList);
-		ResponseEntity.ok().body(ticketResponseDto);
-		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
+		return ResponseEntity.ok().body(ticketResponseDto);
+		// return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
 	// 티켓에 있는 댓글 가져오기
 	private List<CommentResponseDto> getComment(Ticket ticket) {
@@ -110,7 +110,7 @@ public class TicketService {
 		if (user.getEmail().equals(ticket.getUser().getEmail()))
 			ticket.update(ticketRequestDto);
 		else throw new CustomException(UNAUTHORIZED_USER);
-		ResponseEntity.ok().body(TicketResponseDto.of(ticket));
+		// ResponseEntity.ok().body(TicketResponseDto.of(ticket));
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 
 	}
@@ -123,7 +123,7 @@ public class TicketService {
 		if (user.getEmail().equals(ticket.getUser().getEmail()))
 			ticketRepository.deleteById(ticketId);
 		else throw new CustomException(UNAUTHORIZED_USER);
-		ResponseEntity.ok().body("티켓 삭제 성공");
+		// ResponseEntity.ok().body("티켓 삭제 성공");
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 
 	}
