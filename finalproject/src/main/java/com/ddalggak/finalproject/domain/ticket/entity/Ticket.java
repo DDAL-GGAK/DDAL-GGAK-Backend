@@ -80,6 +80,10 @@ public class Ticket extends BaseEntity {
 	public void update(TicketRequestDto ticketRequestDto) {
 		this.ticketTitle = ticketRequestDto.getTicketTitle();
 		this.ticketDescription = ticketRequestDto.getTicketDescription();
+		this.priority = ticketRequestDto.getPriority();
+		this.difficulty = ticketRequestDto.getDifficulty();
+		this.assigned = ticketRequestDto.getAssigned();
+		this.expiredAt = ticketRequestDto.getExpiredAt();
 		// this.user = user;
 	}
 }
