@@ -16,7 +16,7 @@ public class CommentResponseDto {
 	private String comment;
 	// private String description;
 	private String email;
-	private LocalDateTime creatAt;
+	private LocalDateTime createdAt;
 	// private LocalDateTime modifiedAt;
 	// private User user;
 
@@ -26,7 +26,7 @@ public class CommentResponseDto {
 		this.comment = c.getComment();
 		// this.description = getDescription();
 		this.email = c.getUser().getEmail();
-		this.creatAt = c.getCreatedAt();
+		this.createdAt = c.getCreatedAt();
 		// this.modifiedAt = c.getModifiedAt();
 		// this.user = c.getUser();
 	}

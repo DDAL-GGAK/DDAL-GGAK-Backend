@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Log Controller", description = "로그 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/ticket/{ticketId}")
+@RequestMapping("/api/{ticketId}/comment")
 public class CommentController {
 	private final CommentService commentService;
 
 	// 댓글 등록
 	@Operation(summary = "ticket comment", description = "comment 등록 post 메서드 체크")
-	@PostMapping("/comment")
+	@PostMapping("")
 	public ResponseEntity<?> createComment
 	(	@PathVariable Long ticketId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -48,7 +48,7 @@ public class CommentController {
 
 	// 댓글 수정
 	@Operation(summary = "patch ticket comment", description = "comment 수정 get 메서드 체크")
-	@PatchMapping("/comment/{commentId}")
+	@PatchMapping("/{commentId}")
 	public ResponseEntity<SuccessResponseDto> updateComment(
 		@PathVariable Long ticketId,
 		@RequestBody CommentResponseDto commentResponseDto,
@@ -57,7 +57,7 @@ public class CommentController {
 	}
 	// 댓글 삭제
 	@Operation(summary = "delete ticket comment", description = "comment 삭제 delete 메서드 체크")
-	@PostMapping("/comment/{commentId}")
+	@DeleteMapping("/{commentId}")
 	public ResponseEntity<SuccessResponseDto> deleteComment(
 		@PathVariable Long ticketId,
 		@PathVariable Long commentId,
