@@ -37,12 +37,10 @@ public enum ErrorCode {
 	/* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 	DUPLICATE_RESOURCE(CONFLICT, "E-001", "데이터가 이미 존재합니다."),
 	DUPLICATE_MEMBER(CONFLICT, "E-002", "중복된 유저가 존재합니다"),
-	/* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
-	COMMENT_NOT_FOUND(NOT_FOUND, "D-007", "해당 로그를 찾을 수 없습니다."),
-	/* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 
 	/* 500 INTERNAL_SERVER_ERROR : 서버에서 문제 일어남 */
-	SERVER_ERROR(INTERNAL_SERVER_ERROR, "F-001", "입력값을 다시 확인하세요.");
+	SERVER_ERROR(INTERNAL_SERVER_ERROR, "F-001", "입력값을 다시 확인하세요.")
+	;
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;
