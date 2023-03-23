@@ -19,6 +19,7 @@ import com.ddalggak.finalproject.domain.project.entity.ProjectUser;
 import com.ddalggak.finalproject.domain.task.entity.TaskUser;
 import com.ddalggak.finalproject.domain.user.role.UserRole;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "Users")
+@Builder
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +62,6 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	List<TaskUser> taskUserList = new ArrayList<>();
 
-	@Builder
 	public User(Long userId, String email, String nickname, String password, String profile, UserRole role,
 		Label label) {
 		this.userId = userId;
