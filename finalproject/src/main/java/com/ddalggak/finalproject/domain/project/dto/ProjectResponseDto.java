@@ -1,6 +1,5 @@
 package com.ddalggak.finalproject.domain.project.dto;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +19,7 @@ public class ProjectResponseDto {
 	public String projectTitle;
 	@Schema(name = "프로젝트 썸네일", example = "http://ddalggak.ap-northeast-1.amazonaws.com/thumbnail/projects/~.jpg")
 	public String thumbnail;
-	@Schema(name = "프로젝트 만료일", example = "2023-04-16 00:00:00")
-	public LocalDate expiredAt;
-	@Schema(name = "프로젝트 관리자")
+	@Schema(name = "프로젝트 리더")
 	public String projectLeader;
 	@Schema(name = "프로젝트 내 참여자 정보")
 	public List<UserResponseDto> participants;
@@ -33,7 +30,6 @@ public class ProjectResponseDto {
 		return ProjectResponseDto.builder()
 			.projectTitle(project.getProjectTitle())
 			.thumbnail(project.getThumbnail())
-			.expiredAt(project.getExpiredAt())
 			.projectLeader(project.getCreatedBy())
 			.participants(project.getProjectUserList().stream().map(UserResponseDto::new).collect(Collectors.toList()))
 			.tasks(project.getTaskList().stream().map(TaskBriefResponseDto::new).collect(Collectors.toList()))
