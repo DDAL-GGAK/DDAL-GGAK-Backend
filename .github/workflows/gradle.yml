@@ -36,10 +36,10 @@ jobs:
         arguments: build
         cache: 'npm'
     - name: Install modules
-      run: npm install
+      run: install
     # 빌드
     - name: Build project
-      run: npm run build
+      run: run build
     # 배포 
 #     - name: Deploy build outputs
 #       uses: appleboy/scp-action@master
