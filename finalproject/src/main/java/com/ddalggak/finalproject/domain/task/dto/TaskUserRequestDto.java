@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TaskUserRequestDto {
 
-	@Schema(name = "task")
+	@Schema(name = "task", description = "task entity")
 	public Task task;
 
 	@Schema(name = "user", defaultValue = "anonymous")

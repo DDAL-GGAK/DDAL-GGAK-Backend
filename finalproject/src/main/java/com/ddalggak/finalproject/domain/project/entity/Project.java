@@ -41,16 +41,16 @@ public class Project extends BaseEntity {
 
 	private String thumbnail;
 
-	private String uuid;
+	private String uuid; //todo 초대코드
 
 	@Setter
 	private String projectLeader;
 
-	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
 	@BatchSize(size = 500)
 	private List<ProjectUser> projectUserList = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
 	@BatchSize(size = 500)
 	private List<Task> taskList = new ArrayList<>();
 
@@ -81,4 +81,5 @@ public class Project extends BaseEntity {
 	public void addTask(Task task) {
 		taskList.add(task);
 	}
+
 }

@@ -17,6 +17,8 @@ import com.ddalggak.finalproject.domain.project.entity.ProjectUser;
 import com.ddalggak.finalproject.domain.project.repository.ProjectRepository;
 import com.ddalggak.finalproject.domain.user.dto.UserResponseDto;
 import com.ddalggak.finalproject.domain.user.entity.User;
+import com.ddalggak.finalproject.domain.user.exception.UserException;
+import com.ddalggak.finalproject.domain.user.repository.UserRepository;
 import com.ddalggak.finalproject.global.dto.SuccessCode;
 import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.error.CustomException;
@@ -30,6 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProjectService {
 	private final ProjectRepository projectRepository;
+
+	private final UserRepository userRepository;
 
 	@Transactional
 	public ResponseEntity<SuccessResponseDto> createProject(User user, ProjectRequestDto projectRequestDto) {
@@ -69,7 +73,7 @@ public class ProjectService {
 	}
 
 	@Transactional
-	public ResponseEntity<?> deleteProject(User user, Long projectId) {
+	public ResponseEntity<SuccessResponseDto> deleteProject(User user, Long projectId) {
 		Project project = validateProject(projectId);
 		if (project.getProjectLeader().equals(user.getEmail())) {
 			projectRepository.delete(project);
@@ -102,6 +106,18 @@ public class ProjectService {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_SEND);
 	}
 
+	public ResponseEntity<?> deleteProjectUser(User user, Long projectId, Long userId) {
+		Project project = validateProject(projectId);
+		User projectUser = userRepository.findById(userId).orElseThrow(
+			() -> new UserException(ErrorCode.EMPTY_CLIENT)
+		);
+		if (!project.getProjectLeader().equals(user.getEmail())) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+		project.getProjectUserList().remove(ProjectUser.create(project, projectUser));
+		return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
+	}
+
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> viewProjectUsers(User user, Long projectId) {
 		Project project = validateProject(projectId);
@@ -128,5 +144,5 @@ public class ProjectService {
 			() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND)
 		);
 	}
-
 }
+
