@@ -41,7 +41,7 @@ jobs:
       run: git update-index --chmod=+x gradle
     
     - name: Build with Gradle
-      run: ./gradlew clean build
+      run: ./gradle clean build
       
    
 # name: Run Gradle on PRs
