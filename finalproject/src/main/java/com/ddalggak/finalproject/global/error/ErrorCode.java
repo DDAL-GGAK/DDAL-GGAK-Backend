@@ -41,7 +41,7 @@ public enum ErrorCode {
 
 	/* 500 INTERNAL_SERVER_ERROR : 서버에서 문제 일어남 */
 	SERVER_ERROR(INTERNAL_SERVER_ERROR, "F-001", "입력값을 다시 확인하세요.")
-  ;
+	;
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;
