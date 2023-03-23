@@ -33,6 +33,7 @@ public enum ErrorCode {
 	NOT_FOUND_COMMENT(NOT_FOUND, "D-005", "해당 댓글을 찾을 수 없습니다."),
 	TICKET_NOT_FOUND(NOT_FOUND, "D-006", "해당 티켓을 찾을 수 없습니다."),
 	PROJECT_NOT_FOUND(NOT_FOUND, "D-007", "해당 프로젝트를 찾을 수 없습니다."),
+	TASK_NOT_FOUND(NOT_FOUND, "D-008", "해당 태스크를 찾을 수 없습니다."),
 
 	/* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 	DUPLICATE_RESOURCE(CONFLICT, "E-001", "데이터가 이미 존재합니다."),
