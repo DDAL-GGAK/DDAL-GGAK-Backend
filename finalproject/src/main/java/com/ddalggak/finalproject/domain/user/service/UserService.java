@@ -5,12 +5,15 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ddalggak.finalproject.domain.user.dto.UserPageDto;
 import com.ddalggak.finalproject.domain.user.dto.UserRequestDto;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.domain.user.exception.UserException;
@@ -45,7 +48,8 @@ public class UserService {
 		String password = passwordEncoder.encode(userRequestDto.getPassword());
 
 		User user = User.builder()
-			.email(nickname)
+			.email(email)
+			.nickname(nickname)
 			.password(password)
 			.build();
 
@@ -72,8 +76,22 @@ public class UserService {
 		}
 
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER,
-			jwtUtil.createAccessToken(user.getEmail(), user.getRole()));
+			jwtUtil.login(email, user.getRole()));
 
+	}
+
+	public void updateNickname(String nickname, String email) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
+
+		User updatedUser = User.builder()
+			.userId(user.getUserId())
+			.email(user.getEmail())
+			.password(user.getPassword())
+			.nickname(nickname)
+			.profile(user.getProfile())
+			.label(user.getLabel())
+			.build();
+		userRepository.save(updatedUser);
 	}
 
 	@Transactional
@@ -115,5 +133,15 @@ public class UserService {
 		if (fileSize > fileSizeLimit) {
 			throw new IllegalArgumentException("총 용량 10MB이하만 업로드 가능합니다");
 		}
+	}
+
+	public ResponseEntity<?> getMyPage(String email) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
+
+		UserPageDto userPage = new UserPageDto(user);
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(userPage);
 	}
 }

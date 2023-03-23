@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -107,11 +109,23 @@ public class UserController {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGOUT);
 	}
 
+	@PutMapping("{nickname}")
+	public ResponseEntity<?> updateNickname(@PathVariable String nickname,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		userService.updateNickname(nickname, userDetails.getEmail());
+		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
+	}
+
 	@PutMapping("/profile")
 	public ResponseEntity<?> updateProfile(@RequestPart(value = "image") MultipartFile image,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 		userService.updateProfile(image, userDetails.getEmail());
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
+	}
+
+	@GetMapping("/mypage")
+	public ResponseEntity<?> getMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return userService.getMyPage(userDetails.getEmail());
 	}
 
 }
