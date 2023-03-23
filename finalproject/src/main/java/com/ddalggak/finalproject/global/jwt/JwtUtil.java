@@ -14,13 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.ddalggak.finalproject.domain.user.entity.User;
+import com.ddalggak.finalproject.domain.user.exception.UserException;
 import com.ddalggak.finalproject.domain.user.repository.UserRepository;
 import com.ddalggak.finalproject.domain.user.role.UserRole;
-import com.ddalggak.finalproject.global.error.CustomException;
 import com.ddalggak.finalproject.global.error.ErrorCode;
-import com.ddalggak.finalproject.global.jwt.token.dto.AccessTokenResponseDto;
+import com.ddalggak.finalproject.global.jwt.token.dto.Token;
 import com.ddalggak.finalproject.global.jwt.token.entity.RefreshToken;
+import com.ddalggak.finalproject.global.jwt.token.repository.TokenRepository;
 import com.ddalggak.finalproject.global.security.UserDetailsServiceImpl;
 
 import io.jsonwebtoken.Claims;
@@ -38,8 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-	// private final RefreshTokenRepository refreshTokenRepository;
 	private final UserRepository userRepository;
+	private final TokenRepository tokenRepository;
+	// private final RefreshTokenRepository refreshTokenRepository;
 	private final UserDetailsServiceImpl userDetailsService;
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	public static final String REFRESH_TOKEN_HEADER = "RefreshToken";
@@ -75,41 +76,23 @@ public class JwtUtil {
 		return null;
 	}
 
-	public AccessTokenResponseDto createToken(String email, UserRole role) {
-		String accessToken = createAccessToken(email, role);
-		String refreshToken = createRefreshToken(email, role);
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-		RefreshToken refreshTokenObj = RefreshToken.builder()
-			.user(user)
-			.token(refreshToken)
-			.build();
-
-		// refreshTokenRepository.save(refreshTokenObj);
-
-		return AccessTokenResponseDto.builder()
-			.accessToken(accessToken)
-			.accessTokenExpireTime(new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME))
-			.refreshToken(refreshToken)
-			.refreshTokenExpireTime(new Date(System.currentTimeMillis() + REFRESH_TOKEN_TIME))
-			.build();
+	public String login(String email, UserRole role) {
+		return createToken(email, role).getAccessToken();
 	}
 
-	public String createAccessToken(String username, UserRole role) {
+	private Token createToken(String email, UserRole role) {
 		Date date = new Date();
-		return BEARER_PREFIX +
+
+		String accessToken = BEARER_PREFIX +
 			Jwts.builder()
-				.setSubject(username) // 토큰 제목
-				.claim(AUTHORIZATION_KEY, role) // 회원 아이디, 회원 등급
-				.setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 토큰 만료 시간
-				.setIssuedAt(date) // 토큰 발급 시간
+				.setSubject(email)
+				.claim(AUTHORIZATION_KEY, role)
+				.setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
+				.setIssuedAt(date)
 				.signWith(key, signatureAlgorithm)
 				.compact();
-	}
 
-	public String createRefreshToken(String email, UserRole role) {
-		Date date = new Date();
-		return BEARER_PREFIX +
+		String refreshToken = BEARER_PREFIX +
 			Jwts.builder()
 				.setSubject(email)
 				.claim(AUTHORIZATION_KEY, role)
@@ -118,14 +101,20 @@ public class JwtUtil {
 				.signWith(key, signatureAlgorithm)
 				.compact();
 
+		Token token = Token.builder()
+			.email(email)
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+
+		tokenRepository.save(token);
+
+		return token;
+
 	}
 
 	public void logoutToken(Long userId) {
 		Long now = new Date().getTime();
-		// refreshTokenRepository.deleteById(userId);
-	}
-
-	public void deleteToken(Long userId) {
 		// refreshTokenRepository.deleteById(userId);
 	}
 
@@ -145,6 +134,41 @@ public class JwtUtil {
 		return false;
 	}
 
+	public String validateRefreshToken(RefreshToken refreshTokenObj) {
+		String token = refreshTokenObj.getRefreshToken();
+		String email = refreshTokenObj.getEmail();
+		UserRole role = userRepository.findByEmail(email)
+			.orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND))
+			.getRole();
+		try {
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+			return recreationAccessToken(email, role);
+		} catch (SecurityException | MalformedJwtException e) {
+			log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+		} catch (ExpiredJwtException e) {
+			log.info("Expired JWT token, 만료된 JWT token 입니다.");
+		} catch (UnsupportedJwtException e) {
+			log.info("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+		} catch (IllegalArgumentException e) {
+			log.info("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+		}
+		return null;
+	}
+
+	private String recreationAccessToken(String email, UserRole role) {
+		Date date = new Date();
+
+		return BEARER_PREFIX +
+			Jwts.builder()
+				.setSubject(email)
+				.claim(AUTHORIZATION_KEY, role)
+				.setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
+				.setIssuedAt(date)
+				.signWith(key, signatureAlgorithm)
+				.compact();
+
+	}
+
 	public Authentication createAuthentication(String email) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -152,14 +176,6 @@ public class JwtUtil {
 
 	public Claims getUserInfo(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-	}
-
-	public Date createAccessTokenExpireTime(String accessToken) {
-		return new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME);
-	}
-
-	public Date createRefreshTokenExpireTime() {
-		return new Date(System.currentTimeMillis() + REFRESH_TOKEN_TIME);
 	}
 
 }
