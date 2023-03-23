@@ -17,6 +17,7 @@ public enum SuccessCode {
 	SUCCESS_UPLOAD(HttpStatus.OK, "upload success"),
 	SUCCESS_SEND(HttpStatus.OK, "send success"),
 	DELETED_SUCCESSFULLY(HttpStatus.OK, "successfully deleted"),
+	GET_ACCESS_TOKEN(HttpStatus.OK, "get access token success"),
 	UPDATED_SUCCESSFULLY(HttpStatus.OK, "successfully updated"),
 
 	/*201 CREATED : REQUEST COMPLETE, RESOURCE SUCCESSFULLY CREATED*/
