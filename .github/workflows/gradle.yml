@@ -35,8 +35,8 @@ jobs:
         gradle-version: 7.5.1
         arguments: build
         cache: 'npm'
-    - name: Install modules
-      run: npm install
+#     - name: Install modules
+#       run: npm install
     # 빌드
     - name: Build project
       run: npm run build
