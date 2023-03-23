@@ -29,7 +29,6 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '11'
-        distribution: 'trmurin'
         cache: gradle
     # (n) Gradlew 권한 설정      
     - name: Setup Gradle
