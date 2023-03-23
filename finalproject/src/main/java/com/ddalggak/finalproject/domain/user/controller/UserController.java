@@ -109,7 +109,7 @@ public class UserController {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGOUT);
 	}
 
-	@PutMapping("{nickname}")
+	@PutMapping("/{nickname}")
 	public ResponseEntity<?> updateNickname(@PathVariable String nickname,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		userService.updateNickname(nickname, userDetails.getEmail());
