@@ -33,7 +33,8 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 7.5.1
-    - run: build
+        cache: 'npm'
+    - run: npm build
 # jobs:
 #   build:
   
