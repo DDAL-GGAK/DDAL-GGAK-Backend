@@ -19,6 +19,7 @@ import com.ddalggak.finalproject.domain.project.entity.ProjectUser;
 import com.ddalggak.finalproject.domain.task.entity.TaskUser;
 import com.ddalggak.finalproject.domain.user.role.UserRole;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -58,10 +59,15 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	List<TaskUser> taskUserList = new ArrayList<>();
 
-	public User(String email, String nickname, String password) {
+	@Builder
+	public User(Long userId, String email, String nickname, String password, String profile, UserRole role,
+		Label label) {
+		this.userId = userId;
 		this.email = email;
 		this.nickname = nickname;
 		this.password = password;
-		this.role = UserRole.USER;
+		this.profile = profile;
+		this.role = role;
+		this.label = label;
 	}
 }
