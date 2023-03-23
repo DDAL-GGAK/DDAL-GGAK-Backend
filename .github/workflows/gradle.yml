@@ -43,8 +43,8 @@ jobs:
     - name: Make Directory for deliver
       run: mkdir deploy
     # Jar 파일 Copy
-    - name: Copy Jar
-      run: cp ./build/libs/*.jar ./deploy/    
+#     - name: Copy Jar
+#       run: cp ./build/libs/*.jar ./deploy/    
       
 #     - name: Build with Gradle
 #       # uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
