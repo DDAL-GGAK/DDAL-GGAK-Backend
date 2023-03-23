@@ -107,14 +107,14 @@ public class CommentService {
 
 	// comment 유무 확인
 	private Comment getComment(Long commentId) {
-		return commentRepository.findById(commentId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMMENT));
+		return commentRepository.findById(commentId).orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 	}
 
 	// comment 유효성 검사
 	private void checkValidation(Ticket ticket, Comment comment, UserDetailsImpl userDetails) {
 		// ticket에 해당 comment가 있는지 검사
 		if(!comment.getTicket().getTicketId().equals(ticket.getTicketId()))
-			throw new CustomException(NOT_FOUND_COMMENT);
+			throw new CustomException(COMMENT_NOT_FOUND);
 		// comment 작성자와 요청자의 일치 여부 검사
 		if(!comment.getUser().getUserId().equals(userDetails.getUser().getUserId()))
 			throw new CustomException(UNAUTHORIZED_MEMBER);

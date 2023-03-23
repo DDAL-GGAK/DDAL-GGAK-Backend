@@ -1,7 +1,5 @@
 package com.ddalggak.finalproject.domain.ticket.controller;
 
-import java.io.IOException;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
+import com.ddalggak.finalproject.domain.ticket.entity.TicketStatus;
 import com.ddalggak.finalproject.domain.ticket.service.TicketService;
 import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
@@ -30,13 +29,15 @@ import lombok.RequiredArgsConstructor;
 public class TicketController {
 	private final TicketService ticketService;
 
+
 	// 티켓 등록
 	@Operation(summary = "post ticket", description = "Ticket 등록 post 메서드 체크")
 	@PostMapping("/ticket")
 	public ResponseEntity<?> createTicket(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody TicketStatus status,
 		@RequestBody TicketResponseDto ticketResponseDto) {
-		return ticketService.createTicket(ticketResponseDto, userDetails.getUser());
+		return ticketService.createTicket(ticketResponseDto, userDetails.getUser(), status);
 	}
 
 	// // 티켓 전체 조회 (테스크에 들어갈 내용) getTickets
@@ -59,8 +60,9 @@ public class TicketController {
 	public ResponseEntity<SuccessResponseDto> updateTicket(
 		@PathVariable Long ticketId,
 		@RequestBody TicketRequestDto ticketRequestDto,
+		@RequestBody TicketStatus status,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.updateTicket(ticketId, ticketRequestDto, userDetails.getUser());
+		return ticketService.updateTicket(ticketId, ticketRequestDto, userDetails.getUser(), status);
 	}
 
 	// 티켓 삭제

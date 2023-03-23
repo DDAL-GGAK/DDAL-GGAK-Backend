@@ -1,15 +1,19 @@
 package com.ddalggak.finalproject.domain.project.entity;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
@@ -22,6 +26,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -36,23 +41,28 @@ public class Project extends BaseEntity {
 
 	private String thumbnail;
 
-	@Column(nullable = false)
-	private LocalDate expiredAt;
+	private String uuid; //todo 초대코드
 
-	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+	@Setter
+	private String projectLeader;
+
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
 	@BatchSize(size = 500)
 	private List<ProjectUser> projectUserList = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
 	@BatchSize(size = 500)
 	private List<Task> taskList = new ArrayList<>();
 
+	@ElementCollection
+	@CollectionTable(name = "TASK_LEADER", joinColumns = @JoinColumn(name = "user_email"))
+	private Set<String> taskLeadersList = new HashSet<>();
+
 	@Builder
 	public Project(ProjectRequestDto projectRequestDto, ProjectUser projectUser) {
-		this.projectTitle = projectRequestDto.getProjectTitle();
-		this.thumbnail = projectRequestDto.getThumbnail();
-		this.expiredAt = projectRequestDto.getExpiredAt();
-		this.addProjectUser(projectUser);
+		projectTitle = projectRequestDto.getProjectTitle();
+		thumbnail = projectRequestDto.getThumbnail();
+		addProjectUser(projectUser);
 	}
 
 	public static Project create(ProjectRequestDto projectRequestDto, ProjectUser projectUser) {
@@ -71,4 +81,5 @@ public class Project extends BaseEntity {
 	public void addTask(Task task) {
 		taskList.add(task);
 	}
+
 }

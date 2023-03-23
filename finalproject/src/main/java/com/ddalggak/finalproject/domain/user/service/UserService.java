@@ -3,7 +3,6 @@ package com.ddalggak.finalproject.domain.user.service;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,15 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ddalggak.finalproject.domain.user.dto.UserRequestDto;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.domain.user.exception.UserException;
-import com.ddalggak.finalproject.domain.user.profile.entity.Profile;
-import com.ddalggak.finalproject.domain.user.profile.repository.ProfileRepository;
 import com.ddalggak.finalproject.domain.user.repository.UserRepository;
-import com.ddalggak.finalproject.global.error.CustomException;
 import com.ddalggak.finalproject.global.error.ErrorCode;
 import com.ddalggak.finalproject.global.jwt.JwtUtil;
 import com.ddalggak.finalproject.infra.aws.S3Uploader;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -32,7 +27,6 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
-	private final ProfileRepository profileRepository;
 	private final S3Uploader s3Uploader;
 
 	private long fileSizeLimit = 10 * 1024 * 1024;//10메가바이트/킬로바이트/바이트
@@ -50,7 +44,10 @@ public class UserService {
 		String nickname = "anonymous";
 		String password = passwordEncoder.encode(userRequestDto.getPassword());
 
-		User user = new User(email, nickname, password);
+		User user = User.builder()
+			.email(nickname)
+			.password(password)
+			.build();
 
 		userRepository.save(user);
 
@@ -80,30 +77,23 @@ public class UserService {
 	}
 
 	@Transactional
-	public void updateProfile(MultipartFile image, HttpServletRequest request, String email) throws IOException {
-		String token = jwtUtil.resolveToken(request);
-		Claims claims;
+	public void updateProfile(MultipartFile image, String email) throws IOException {
 		fileSizeCheck(image);
 		fileCheck(image);
 
-		if (token != null) {
-			if (jwtUtil.validateToken(token)) {
-				claims = jwtUtil.getUserInfo(token);
-			} else {
-				throw new UserException(ErrorCode.INVALID_REQUEST);
-			}
-			User user = userRepository.findByEmail(claims.getSubject())
-				.orElseThrow(() -> new CustomException(ErrorCode.EMPTY_CLIENT));
-			if (user.getEmail().equals(email)) {
-				String storedFileName = s3Uploader.upload(image, "profile");
-				profileRepository.deleteByUser(user);
-				profileRepository.save(new Profile(user, storedFileName));
-			} else {
-				throw new UserException(ErrorCode.INVALID_REQUEST);
-			}
-		} else {
-			throw new UserException(ErrorCode.INVALID_REQUEST);
-		}
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
+
+		String storedFileName = s3Uploader.upload(image, "profile");
+
+		User updatedUser = User.builder()
+			.userId(user.getUserId())
+			.email(user.getEmail())
+			.password(user.getPassword())
+			.nickname(user.getNickname())
+			.profile(storedFileName)
+			.label(user.getLabel())
+			.build();
+		userRepository.save(updatedUser);
 
 	}
 

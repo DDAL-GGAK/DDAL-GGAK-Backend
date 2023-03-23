@@ -15,6 +15,7 @@ import com.ddalggak.finalproject.domain.project.dto.ProjectUserRequestDto;
 import com.ddalggak.finalproject.domain.project.entity.Project;
 import com.ddalggak.finalproject.domain.project.entity.ProjectUser;
 import com.ddalggak.finalproject.domain.project.repository.ProjectRepository;
+import com.ddalggak.finalproject.domain.user.dto.UserResponseDto;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.domain.user.exception.UserException;
 import com.ddalggak.finalproject.domain.user.repository.UserRepository;
@@ -29,35 +30,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ProjectService {
-
 	private final ProjectRepository projectRepository;
+
 	private final UserRepository userRepository;
 
 	@Transactional
-	public ResponseEntity<?> createProject(String email, ProjectRequestDto projectRequestDto) {
-		User user = userRepository.findByEmail(email).orElseThrow(
-			() -> new UserException(ErrorCode.MEMBER_NOT_FOUND)
-		);
+	public ResponseEntity<SuccessResponseDto> createProject(User user, ProjectRequestDto projectRequestDto) {
 		//1. user로 projectUserRequestDto 생성
 		ProjectUserRequestDto projectUserRequestDto = ProjectUserRequestDto.create(user);
 		//2. projectUserDto로 projectUser생성
 		ProjectUser projectUser = ProjectUser.create(projectUserRequestDto);
 		//3. projectUser로 project생성
 		Project project = Project.create(projectRequestDto, projectUser);
-		//4. projectRepository에 project 저장
+		//4. projectLeader 주입
+		project.setProjectLeader(user.getEmail());
+		//5. projectRepository에 project 저장
 		projectRepository.save(project);
-
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseEntity<?> viewProjectAll(String email) {
-		User user = userRepository.findByEmail(email).orElseThrow(
-			() -> new UserException(ErrorCode.MEMBER_NOT_FOUND)
-		);
-
+	public ResponseEntity<List<ProjectBriefResponseDto>> viewProjectAll(User user) {
 		List<ProjectBriefResponseDto> projectResponseDtoList = projectRepository.findAllByUserId(user.getUserId())
 			.stream()
 			.map(ProjectBriefResponseDto::new)
@@ -69,21 +63,19 @@ public class ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseEntity<?> viewProject(Long id) {
-		Project project = projectRepository.findById(id).orElseThrow(
-			() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND)
-		);
+	public ResponseEntity<ProjectResponseDto> viewProject(User user, Long id) {
+		Project project = validateProject(id);
+		validateExistMember(project, ProjectUser.create(project, user));
+
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(ProjectResponseDto.of(project));
 	}
 
 	@Transactional
-	public ResponseEntity<?> deleteProject(String email, Long projectId) {
-		Project project = projectRepository.findById(projectId).orElseThrow(
-			() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND)
-		);
-		if (project.getCreatedBy().equals(email)) {
+	public ResponseEntity<SuccessResponseDto> deleteProject(User user, Long projectId) {
+		Project project = validateProject(projectId);
+		if (project.getProjectLeader().equals(user.getEmail())) {
 			projectRepository.delete(project);
 			return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
 		} else {
@@ -92,24 +84,65 @@ public class ProjectService {
 	}
 
 	@Transactional
-	public ResponseEntity<?> joinProject(String email, Long projectId) {
-		User user = userRepository.findByEmail(email).orElseThrow(
-			() -> new UserException(ErrorCode.MEMBER_NOT_FOUND)
-		);
-		Project project = projectRepository.findById(projectId).orElseThrow(
-			() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND)
-		);
-		validateDuplicateMember(project, user);
-		ProjectUserRequestDto projectUserRequestDto = ProjectUserRequestDto.join(project, user);
-		ProjectUser projectUser = ProjectUser.create(projectUserRequestDto);
+	public ResponseEntity<?> joinProject(User user, Long projectId) {
+		Project project = validateProject(projectId);
+		ProjectUser projectUser = ProjectUser.create(project, user);
+		validateDuplicateMember(project, projectUser);
 		project.addProjectUser(projectUser);
 		return SuccessResponseDto.toResponseEntity(SuccessCode.JOINED_SUCCESSFULLY);
 	}
 
-	//todo : 테스트 코드 작성, 로직 수정
-	private void validateDuplicateMember(Project project, User user) {
-		if (project.getProjectUserList().contains(user)) {
+	@Transactional
+	public ResponseEntity<SuccessResponseDto> updateProject(User user, Long projectId,
+		ProjectRequestDto projectRequestDto) {
+		Project project = validateProject(projectId);
+		if (!project.getProjectLeader().equals(user.getEmail())) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+		projectRepository.update(
+			projectRequestDto.getProjectTitle(),
+			projectRequestDto.getThumbnail(),
+			projectId); // todo 근데 이거 null 들어오면 어쩔건데? factory pattern 조져?
+		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_SEND);
+	}
+
+	public ResponseEntity<?> deleteProjectUser(User user, Long projectId, Long userId) {
+		Project project = validateProject(projectId);
+		User projectUser = userRepository.findById(userId).orElseThrow(
+			() -> new UserException(ErrorCode.EMPTY_CLIENT)
+		);
+		if (!project.getProjectLeader().equals(user.getEmail())) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+		project.getProjectUserList().remove(ProjectUser.create(project, projectUser));
+		return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseEntity<?> viewProjectUsers(User user, Long projectId) {
+		Project project = validateProject(projectId);
+		validateExistMember(project, ProjectUser.create(project, user));
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(project.getProjectUserList().stream().map(UserResponseDto::of).collect(Collectors.toList()));
+	}
+
+	private void validateDuplicateMember(Project project, ProjectUser projectUser) {
+		if (project.getProjectUserList().contains(projectUser)) {
 			throw new CustomException(ErrorCode.DUPLICATE_MEMBER);
 		}
 	}
+
+	private void validateExistMember(Project project, ProjectUser projectUser) {
+		if (!project.getProjectUserList().contains(projectUser)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+	}
+
+	private Project validateProject(Long id) {
+		return projectRepository.findById(id).orElseThrow(
+			() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND)
+		);
+	}
 }
+
