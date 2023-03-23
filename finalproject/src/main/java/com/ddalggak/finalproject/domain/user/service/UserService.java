@@ -45,7 +45,8 @@ public class UserService {
 		String password = passwordEncoder.encode(userRequestDto.getPassword());
 
 		User user = User.builder()
-			.email(nickname)
+			.email(email)
+			.nickname(nickname)
 			.password(password)
 			.build();
 
@@ -74,6 +75,20 @@ public class UserService {
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER,
 			jwtUtil.createAccessToken(user.getEmail(), user.getRole()));
 
+	}
+
+	public void updateNickname(String nickname, String email) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
+
+		User updatedUser = User.builder()
+			.userId(user.getUserId())
+			.email(user.getEmail())
+			.password(user.getPassword())
+			.nickname(nickname)
+			.profile(user.getProfile())
+			.label(user.getLabel())
+			.build();
+		userRepository.save(updatedUser);
 	}
 
 	@Transactional

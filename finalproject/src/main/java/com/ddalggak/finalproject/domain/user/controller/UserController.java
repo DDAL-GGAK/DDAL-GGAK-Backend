@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -105,6 +106,13 @@ public class UserController {
 			return ErrorResponse.from(ErrorCode.INVALID_REQUEST);
 		}
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGOUT);
+	}
+
+	@PutMapping("{nickname}")
+	public ResponseEntity<?> updateNickname(@PathVariable String nickname,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		userService.updateNickname(nickname, userDetails.getEmail());
+		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
 	}
 
 	@PutMapping("/profile")
