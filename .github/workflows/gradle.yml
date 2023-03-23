@@ -38,7 +38,7 @@ jobs:
        arguments: build
 #        gradle-executable: /path/to/installed/gradle
     - name: Grant execute permission for gradlew
-      run: git update-index --chmod=+x gradlew
+      run: git update-index --chmod=+x gradle
     
     - name: Build with Gradle
       run: ./gradlew clean build
