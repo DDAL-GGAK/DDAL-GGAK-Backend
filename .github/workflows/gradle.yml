@@ -35,10 +35,21 @@ jobs:
         gradle-version: 7.5.1
         arguments: build
         cache: 'npm'
-#     - name: Install modules
-#       run: npm install
-#     - name: Build project
-#       run: npm run build
+    - name: Install modules
+      run: npm install
+    # 빌드
+    - name: Build project
+      run: npm run build
+    # 배포 
+    - name: Deploy build outputs
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PEM_KEY }}
+        port: ${{ secrets.PORT }}
+        source: "build/*"
+        strip_components: 1
 # jobs:
 #   build:
   
