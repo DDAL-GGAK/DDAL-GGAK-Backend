@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -60,6 +62,10 @@ public class Ticket extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
 	private User user;
+
+	@Column(nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private TicketStatus status;
 	// @OneToMany(mappedBy = "ticket")
 	// private List<User> User = new ArrayList<>();
 
@@ -67,7 +73,7 @@ public class Ticket extends BaseEntity {
 	// @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
 	// private List<Comment> comment = new ArrayList<>();
 
-	public Ticket(TicketResponseDto ticketResponseDto, User user) {
+	public Ticket(TicketResponseDto ticketResponseDto, User user, TicketStatus status) {
 		this.ticketTitle = ticketResponseDto.getTicketTitle();
 		this.ticketDescription = ticketResponseDto.getTicketDescription();
 		this.priority = ticketResponseDto.getPriority();
@@ -75,15 +81,17 @@ public class Ticket extends BaseEntity {
 		this.assigned = ticketResponseDto.getAssigned();
 		this.expiredAt = ticketResponseDto.getExpiredAt();
 		this.user = user;
+		this.status = status;
 		// this.comment = ticketResponseDto.getComments();
 	}
-	public void update(TicketRequestDto ticketRequestDto) {
+	public void update(TicketRequestDto ticketRequestDto, TicketStatus status) {
 		this.ticketTitle = ticketRequestDto.getTicketTitle();
 		this.ticketDescription = ticketRequestDto.getTicketDescription();
 		this.priority = ticketRequestDto.getPriority();
 		this.difficulty = ticketRequestDto.getDifficulty();
 		this.assigned = ticketRequestDto.getAssigned();
 		this.expiredAt = ticketRequestDto.getExpiredAt();
+		this.status = status;
 		// this.user = user;
 	}
 }

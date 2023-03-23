@@ -15,6 +15,7 @@ import com.ddalggak.finalproject.domain.ticket.comment.repository.CommentReposit
 import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
+import com.ddalggak.finalproject.domain.ticket.entity.TicketStatus;
 import com.ddalggak.finalproject.domain.ticket.repository.TicketRepository;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.global.dto.SuccessCode;
@@ -42,9 +43,9 @@ public class TicketService {
 	// }
 	@Transactional
 	public ResponseEntity<SuccessResponseDto> createTicket(TicketResponseDto ticketResponseDto,
-		User user) {
+		User user, TicketStatus status) {
 		System.out.println("--------user = " + user.getEmail());
-		Ticket ticket = ticketRepository.saveAndFlush(new Ticket(ticketResponseDto, user));
+		Ticket ticket = ticketRepository.saveAndFlush(new Ticket(ticketResponseDto, user, status));
 		// ResponseEntity.ok().body(TicketResponseDto.of(ticket));
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
@@ -103,16 +104,15 @@ public class TicketService {
 	// 티켓 수정하기 (티켓 수정이 가능했었나요? 일단 만들어 놓자!)
 	@Transactional
 	public ResponseEntity<SuccessResponseDto> updateTicket(Long ticketId,
-		TicketRequestDto ticketRequestDto, User user) {
+		TicketRequestDto ticketRequestDto, User user, TicketStatus status) {
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 			() -> new CustomException(TICKET_NOT_FOUND)); // 권한에 접근할 수 없습니다 넣어도 될지 상의하기
 
 		if (user.getEmail().equals(ticket.getUser().getEmail()))
-			ticket.update(ticketRequestDto);
+			ticket.update(ticketRequestDto, status);
 		else throw new CustomException(UNAUTHORIZED_USER);
 		// ResponseEntity.ok().body(TicketResponseDto.of(ticket));
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
-
 	}
 
 	// 티켓 삭제하기
@@ -125,7 +125,6 @@ public class TicketService {
 		else throw new CustomException(UNAUTHORIZED_USER);
 		// ResponseEntity.ok().body("티켓 삭제 성공");
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
-
 	}
 
 	// 티켓 완료하기 티켓에 가져오기
