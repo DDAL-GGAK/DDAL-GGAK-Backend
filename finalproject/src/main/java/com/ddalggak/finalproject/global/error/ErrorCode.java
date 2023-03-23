@@ -15,9 +15,8 @@ public enum ErrorCode {
 	/* 400 BAD_REQUEST : 잘못된 요청  */
 	INVALID_REFRESH_TOKEN(BAD_REQUEST, "A-001", "리프레시 토큰이 유효하지 않습니다"),
 	MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "A-002", "리프레시 토큰의 유저 정보가 일치하지 않습니다"),
-	DUPLICATE_MEMBER(BAD_REQUEST, "A-003", "중복된 유저가 존재합니다"),
-	INVALID_REQUEST(BAD_REQUEST, "A-004", "잘못된 요청입니다."),
-	INVALID_PASSWORD(BAD_REQUEST, "A-005", "비밀번호가 일치하지 않습니다."),
+	INVALID_REQUEST(BAD_REQUEST, "A-003", "잘못된 요청입니다."),
+	INVALID_PASSWORD(BAD_REQUEST, "A-004", "비밀번호가 일치하지 않습니다."),
 
 	/* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
 	INVALID_AUTH_TOKEN(UNAUTHORIZED, "B-001", "권한 정보가 없는 토큰입니다"),
@@ -38,9 +37,11 @@ public enum ErrorCode {
 
 	/* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 	DUPLICATE_RESOURCE(CONFLICT, "E-001", "데이터가 이미 존재합니다."),
+	DUPLICATE_MEMBER(CONFLICT, "E-002", "중복된 유저가 존재합니다"),
 
 	/* 500 INTERNAL_SERVER_ERROR : 서버에서 문제 일어남 */
-	SERVER_ERROR(INTERNAL_SERVER_ERROR, "F-001", "입력값을 다시 확인하세요.");
+	SERVER_ERROR(INTERNAL_SERVER_ERROR, "F-001", "입력값을 다시 확인하세요.")
+  ;
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;

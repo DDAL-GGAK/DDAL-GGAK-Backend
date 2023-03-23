@@ -77,17 +77,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Valid @RequestBody UserRequestDto userRequestDto, HttpServletResponse response,
-		BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			List<ObjectError> list = bindingResult.getAllErrors();
-			for (ObjectError e : list) {
-				System.out.println(e.getDefaultMessage());
-			}
-			return ResponseEntity.badRequest().body(list);
-
-		}
-
+	public ResponseEntity<?> login(@RequestBody UserRequestDto userRequestDto, HttpServletResponse response) {
 		userService.login(userRequestDto, response);
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGIN);
 
@@ -119,8 +109,8 @@ public class UserController {
 
 	@PutMapping("/profile")
 	public ResponseEntity<?> updateProfile(@RequestPart(value = "image") MultipartFile image,
-		HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-		userService.updateProfile(image, request, userDetails.getEmail());
+		@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+		userService.updateProfile(image, userDetails.getEmail());
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
 	}
 
