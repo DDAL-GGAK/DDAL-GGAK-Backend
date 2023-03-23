@@ -39,7 +39,7 @@ public class WebSecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		// h2-console 사용 및 resources 접근 허용 설정
 		return (web) -> web.ignoring()
-			//.requestMatchers(PathRequest.toH2Console())
+			.requestMatchers(PathRequest.toH2Console())
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 
@@ -58,6 +58,10 @@ public class WebSecurityConfig {
 			.antMatchers(HttpMethod.GET, "/api/task/**")
 			.permitAll()
 			.antMatchers(HttpMethod.GET, "/api/ticket/**")
+			.permitAll()
+			.antMatchers("/ddal-ggak/docs")
+			.permitAll()
+			.antMatchers("/ddal-ggak.html")
 			.permitAll()
 
 			//                .antMatchers(HttpMethod.POST, "/api/logout").permitAll()

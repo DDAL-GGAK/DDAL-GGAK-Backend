@@ -103,4 +103,13 @@ public class ProjectController {
 		@PathVariable Long projectId) {
 		return projectService.viewProjectUsers(userDetails.getUser(), projectId);
 	}
+
+	@Operation(summary = "프로젝트 참여자 삭제", description = "api for delete project member")
+	@DeleteMapping("/project/{projectId}/user/{userId}")
+	public ResponseEntity<?> deleteProjectUser(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@PathVariable Long projectId,
+		@PathVariable Long userId) {
+		return projectService.deleteProjectUser(userDetails.getUser(), projectId, userId);
+	}
 }
