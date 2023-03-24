@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class UserPageDto {
-	public Long id;
+	public Long userId;
 	public String email;
 	public String nickname;
 	public String profile;
 
 	@Builder
 	public UserPageDto(User user) {
-		this.id = user.getUserId();
+		this.userId = user.getUserId();
 		this.email = user.getEmail();
 		this.nickname = user.getNickname();
 		this.profile = user.getProfile();
