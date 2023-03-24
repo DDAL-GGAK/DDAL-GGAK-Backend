@@ -91,7 +91,7 @@ public class Task extends BaseEntity {
 
 	//연관관계 편의 메소드
 
-	private void addTaskUser(TaskUser taskUser) {
+	public void addTaskUser(TaskUser taskUser) {
 		taskUserList.add(taskUser);
 		taskUser.addTask(this);
 	}
