@@ -89,7 +89,6 @@ public class UserService {
 			.password(user.getPassword())
 			.nickname(nickname)
 			.profile(user.getProfile())
-			.label(user.getLabel())
 			.build();
 		userRepository.save(updatedUser);
 	}
@@ -109,7 +108,6 @@ public class UserService {
 			.password(user.getPassword())
 			.nickname(user.getNickname())
 			.profile(storedFileName)
-			.label(user.getLabel())
 			.build();
 		userRepository.save(updatedUser);
 
