@@ -37,8 +37,26 @@ public class LabelController {
 	@DeleteMapping("/label/{labelId}")
 	public ResponseEntity<SuccessResponseDto> deleteLabel(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody Long taskId,
+		@RequestBody LabelRequestDto labelRequestDto,
 		@PathVariable Long labelId) {
-		return labelService.deleteLabel(userDetails.getUser(), taskId, labelId);
+		return labelService.deleteLabel(userDetails.getUser(), labelRequestDto, labelId);
+	}
+
+	@Operation(summary = "Label 초대", description = "api for invite label")
+	@PostMapping("/label/{labelId}/invite")
+	public ResponseEntity<SuccessResponseDto> inviteLabel(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody LabelRequestDto labelRequestDto,
+		@PathVariable Long labelId) {
+		return labelService.inviteLabel(userDetails.getUser(), labelRequestDto, labelId);
+	}
+
+	@Operation(summary = "label 리더 부여 및 해제", description = "api for assign/dismiss admin to label")
+	@PostMapping("/label/{labelId}/leader")
+	public ResponseEntity<SuccessResponseDto> manageLeader(
+		@AuthenticationPrincipal UserDetailsImpl user,
+		@PathVariable Long labelId,
+		@RequestBody LabelRequestDto labelRequestDto) {
+		return labelService.manageLeader(user.getUser(), labelRequestDto, labelId);
 	}
 }
