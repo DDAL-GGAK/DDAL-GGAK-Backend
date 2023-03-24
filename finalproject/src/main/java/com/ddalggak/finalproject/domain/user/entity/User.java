@@ -16,20 +16,19 @@ import com.ddalggak.finalproject.domain.label.entity.LabelUser;
 import com.ddalggak.finalproject.domain.project.entity.ProjectUser;
 import com.ddalggak.finalproject.domain.task.entity.TaskUser;
 import com.ddalggak.finalproject.domain.user.role.UserRole;
+import com.ddalggak.finalproject.global.entity.BaseEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "Users")
 @Builder
-public class User {
+public class User extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;

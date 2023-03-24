@@ -57,7 +57,7 @@ public class UserService {
 
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public void login(UserRequestDto userRequestDto, HttpServletResponse response) {
 		String email = userRequestDto.getEmail();
 
@@ -80,6 +80,7 @@ public class UserService {
 
 	}
 
+	@Transactional
 	public void updateNickname(String nickname, String email) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -133,6 +134,7 @@ public class UserService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public ResponseEntity<?> getMyPage(String email) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 
