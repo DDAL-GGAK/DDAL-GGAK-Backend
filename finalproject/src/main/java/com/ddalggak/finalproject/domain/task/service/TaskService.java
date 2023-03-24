@@ -67,17 +67,24 @@ public class TaskService {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
 	}
 
-	@Transactional(readOnly = true)
-	public ResponseEntity<SuccessResponseDto> inviteTask(User user, Long projectId, Long taskId, String email) {
+	/*
+	 * 프로젝트 리더이거나 taskLeader인 경우만 가능,
+	 * 혹시 다른 taskLeader는 초대못할경우 task.getTaskLeader().equals(user.getEmail())로 검증
+	 */
+	@Transactional // todo task안에 유저 있으면 초대 안되게 막아야함
+	public ResponseEntity<SuccessResponseDto> inviteTask(User user, TaskRequestDto taskRequestDto, Long taskId) {
 		Task task = validateTask(taskId);
-		Project project = validateProject(projectId);
-		User invited = validateUserByEmail(email);
+		Project project = validateProject(taskRequestDto.getProjectId());
+		User invited = validateUserByEmail(taskRequestDto.getEmail());
+		TaskUser taskUser = TaskUser.create(task, invited);
 		// 유효성 검증
-		if (project.getProjectLeader().equals(user.getEmail()) || project.getTaskLeadersList()
-			.contains(
-				user.getEmail())) { // 프로젝트 리더이거나 taskLeader인 경우만 가능, 혹시 다른 taskLeader는 초대못할경우 task.getTaskLeader().equals(user.getEmail())로 검증
+		if (task.getTaskUserList().contains(taskUser)) { // todo 로직 잘못짬
+			throw new CustomException(ErrorCode.DUPLICATE_MEMBER);
+		} else if (project.getProjectLeader().equals(user.getEmail()) || project.getTaskLeadersList()
+			.contains(user.getEmail())) {
 			validateExistMember(project, ProjectUser.create(project, invited)); // user가 프로젝트에 있는 유저인지 검증
-			task.addTaskUser(TaskUser.create(task, invited)); // task에 넣기
+			task.addTaskUser(taskUser); // task에 넣기
+			taskRepository.save(task);
 		} else {
 			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
 		}
@@ -88,12 +95,12 @@ public class TaskService {
 	 * 지금은 projectId가 필요하지 않지만 만약 taskId가 아닌 taskName을 url로 지정하게 될 경우 projectId가 필요할 수 있음.
 	 */
 	@Transactional
-	public ResponseEntity<SuccessResponseDto> assignLeader(User user, Long projectId, Long taskId, String email) {
-		User userToLeader = validateUserByEmail(email);
+	public ResponseEntity<SuccessResponseDto> assignLeader(User user, TaskRequestDto taskRequestDto, Long taskId) {
+		User userToLeader = validateUserByEmail(taskRequestDto.getEmail());
 		Task task = validateTask(taskId);
 		validateExistMember(task, TaskUser.create(task, userToLeader));
 		if (task.getProject().getProjectLeader().equals(user.getEmail())) {
-			task.setTaskLeader(email);
+			task.setTaskLeader(taskRequestDto.getEmail());
 		} else {
 			throw new CustomException(ErrorCode.INVALID_REQUEST);
 		}

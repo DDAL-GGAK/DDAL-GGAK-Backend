@@ -2,6 +2,7 @@ package com.ddalggak.finalproject.domain.task.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ddalggak.finalproject.domain.task.entity.Task;
 import com.ddalggak.finalproject.domain.user.dto.UserResponseDto;
@@ -44,7 +45,7 @@ public class TaskBriefResponseDto { // task 간단 요약제공
 		// 	completedTickets = task.getCompletedTickets();
 		totalTickets = task.getTicketList().size();
 		participantsCount = task.getTaskUserList().size();
-		// participants //todo : n명만 보여주기 = querydsl
+		participants = task.getTaskUserList().stream().map(UserResponseDto::new).collect(Collectors.toList());
 	}
 
 }

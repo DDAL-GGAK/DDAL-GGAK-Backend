@@ -41,9 +41,9 @@ public class TaskController {
 	@GetMapping("/task/{taskId}")
 	public ResponseEntity<TaskResponseDto> viewTask(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody Long projectId,
+		@Valid @RequestBody TaskRequestDto taskRequestDto,
 		@PathVariable Long taskId) {
-		return taskService.viewTask(userDetails.getUser(), projectId, taskId);
+		return taskService.viewTask(userDetails.getUser(), taskRequestDto.getProjectId(), taskId);
 	}
 
 	@Operation(summary = "Task 삭제", description = "api for delete one task")
@@ -55,23 +55,21 @@ public class TaskController {
 	}
 
 	@Operation(summary = "Task 리더 부여", description = "api for assign admin to task")
-	@PostMapping("/{taskId}/admin")
+	@PostMapping("/task/{taskId}/admin")
 	public ResponseEntity<SuccessResponseDto> assignAdmin(
 		@AuthenticationPrincipal UserDetailsImpl user,
-		@RequestBody Long projectId,
 		@PathVariable Long taskId,
-		@RequestBody String email) {
-		return taskService.assignLeader(user.getUser(), projectId, taskId, email);
+		@Valid @RequestBody TaskRequestDto taskRequestDto) {
+		return taskService.assignLeader(user.getUser(), taskRequestDto, taskId);
 	}
 
 	@Operation(summary = "Task 초대", description = "api for invite user to task")
-	@PostMapping("/{taskId}/invite")
+	@PostMapping("/task/{taskId}/invite")
 	public ResponseEntity<SuccessResponseDto> inviteTask(
 		@AuthenticationPrincipal UserDetailsImpl user,
-		@RequestBody Long projectId,
-		@PathVariable Long taskId,
-		@RequestBody String email) {
-		return taskService.inviteTask(user.getUser(), projectId, taskId, email);
+		@Valid @RequestBody TaskRequestDto taskRequestDto,
+		@PathVariable Long taskId) {
+		return taskService.inviteTask(user.getUser(), taskRequestDto, taskId);
 	}
 
 }
