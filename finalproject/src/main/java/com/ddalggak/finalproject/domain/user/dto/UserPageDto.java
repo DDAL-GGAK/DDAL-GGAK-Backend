@@ -1,6 +1,5 @@
 package com.ddalggak.finalproject.domain.user.dto;
 
-import com.ddalggak.finalproject.domain.user.entity.Label;
 import com.ddalggak.finalproject.domain.user.entity.User;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +15,6 @@ public class UserPageDto {
 	public String email;
 	public String nickname;
 	public String profile;
-	public Label label;
 
 	@Builder
 	public UserPageDto(User user) {
@@ -24,6 +22,5 @@ public class UserPageDto {
 		this.email = user.getEmail();
 		this.nickname = user.getNickname();
 		this.profile = user.getProfile();
-		this.label = user.getLabel();
 	}
 }
