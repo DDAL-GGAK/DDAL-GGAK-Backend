@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 
 import com.ddalggak.finalproject.domain.project.dto.ProjectRequestDto;
 import com.ddalggak.finalproject.domain.task.entity.Task;
@@ -31,6 +32,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Project extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

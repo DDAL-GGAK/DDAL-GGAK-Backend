@@ -2,6 +2,8 @@ package com.ddalggak.finalproject.domain.project.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +21,7 @@ import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +35,14 @@ public class ProjectController {
 
 	private final ProjectService projectService;
 
-	@Operation(summary = "프로젝트 생성", description = "api for creating project")
+	@ApiResponses(
+		value = {
+			@ApiResponse(responseCode = "201", description = "프로젝트 생성 성공"),
+			@ApiResponse(responseCode = "401", description = "권한 없음")
+		})
+	@Operation(summary = "프로젝트 생성", description = "api for creating project", parameters = {
+		@Parameter(name = "projectRequestDto", description = "프로젝트 생성에 필요한 정보입니다.", required = true)
+	})
 	@PostMapping("/project")
 	public ResponseEntity<SuccessResponseDto> createProject(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -47,7 +57,9 @@ public class ProjectController {
 		return projectService.viewProjectAll(userDetails.getUser());
 	}
 
-	@Operation(summary = "프로젝트 단건조회", description = "api for view one project")
+	@Operation(summary = "프로젝트 단건조회", description = "api for view one project", parameters = {
+		@Parameter(name = "projectId", description = "조회할 프로젝트의 id입니다.", required = true)
+	})
 	@GetMapping("/project/{projectId}")
 	public ResponseEntity<?> viewProjectOne(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -76,13 +88,13 @@ public class ProjectController {
 	public ResponseEntity<SuccessResponseDto> updateProject(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@PathVariable Long projectId,
-		@RequestBody ProjectRequestDto projectRequestDto) {
+		@Valid @RequestBody ProjectRequestDto projectRequestDto) {
 		return projectService.updateProject(userDetails.getUser(), projectId, projectRequestDto);
 	}
 
 	@ApiResponses(
 		value = {
-			@ApiResponse(responseCode = "201", description = "프로젝트 삭제 성공"),
+			@ApiResponse(responseCode = "200", description = "프로젝트 삭제 성공"),
 			@ApiResponse(responseCode = "400", description = "프로젝트 삭제 실패"),
 			@ApiResponse(responseCode = "403", description = "프로젝트 삭제 권한 없음"),
 			@ApiResponse(responseCode = "404", description = "프로젝트 삭제 실패(존재하지 않는 프로젝트)")
