@@ -60,14 +60,7 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public void login(UserRequestDto userRequestDto, HttpServletResponse response) {
 		String email = userRequestDto.getEmail();
-
-		Optional<User> optionalUser = userRepository.findByEmail(email);
-
-		if (optionalUser.isEmpty()) {
-			throw new UserException(ErrorCode.UNAUTHORIZED_MEMBER);
-		}
-
-		User user = optionalUser.get();
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 		String password = userRequestDto.getPassword();
 		String dbPassword = user.getPassword();
 
@@ -78,6 +71,11 @@ public class UserService {
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER,
 			jwtUtil.login(email, user.getRole()));
 
+		UserPageDto userPage = new UserPageDto(user);
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(userPage);
 	}
 
 	@Transactional
