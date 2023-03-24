@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Ticket Controller", description = "티켓 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/task/{taskId}")
 public class TicketController {
 	private final TicketService ticketService;
 
@@ -34,10 +34,11 @@ public class TicketController {
 	@Operation(summary = "post ticket", description = "Ticket 등록 post 메서드 체크")
 	@PostMapping("/ticket")
 	public ResponseEntity<?> createTicket(
+		@PathVariable Long taskId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody TicketStatus status,
-		@RequestBody TicketResponseDto ticketResponseDto) {
-		return ticketService.createTicket(ticketResponseDto, userDetails.getUser(), status);
+		// @RequestBody TicketStatus status,
+		@RequestBody TicketRequestDto ticketRequestDto) {
+		return ticketService.createTicket(ticketRequestDto, taskId, userDetails.getUser());//, status);
 	}
 
 	// // 티켓 전체 조회 (테스크에 들어갈 내용) getTickets
@@ -45,31 +46,43 @@ public class TicketController {
 	// public ResponseEntity<List<TicketResponseDto>> getTickets(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 	// 	return ticketService.getTickets();
 	// }
+
 	// 티켓 상세 조회
 	@Operation(summary = "get ticket", description = "Ticket 상세조회 get 메서드 체크")
 	@GetMapping("/ticket/{ticketId}")
-	public ResponseEntity<TicketResponseDto> getTicket(
+	public ResponseEntity<TicketResponseDto> viewTicket(
+		// @PathVariable Long taskId,
 		@PathVariable Long ticketId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.getTicket(ticketId, userDetails.getUser().getEmail());
+		return ticketService.viewTicket(ticketId, userDetails.getUser().getEmail());
 	}
-
+	// 티켓 상세 조회
+	// @Operation(summary = "get ticket", description = "Ticket 상세조회 get 메서드 체크")
+	// @GetMapping("/ticket/{ticketId}")
+	// public ResponseEntity<TicketResponseDto> getTicket(
+	// 	@PathVariable Long ticketId,
+	// 	@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	// 	return ticketService.getTicket(ticketId, userDetails.getUser().getEmail());
+	// }
 	// 티켓 수정
 	@Operation(summary = "patch ticket", description = "Ticket 수정 patch 메서드 체크")
 	@PatchMapping("/ticket/{ticketId}")
 	public ResponseEntity<SuccessResponseDto> updateTicket(
+		@PathVariable Long taskId,
 		@PathVariable Long ticketId,
 		@RequestBody TicketRequestDto ticketRequestDto,
 		@RequestBody TicketStatus status,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.updateTicket(ticketId, ticketRequestDto, userDetails.getUser(), status);
+		return ticketService.updateTicket(ticketId, taskId, ticketRequestDto, userDetails, status);
 	}
 
 	// 티켓 삭제
 	@Operation(summary = "delete ticket", description = "Ticket 삭제 delete 메서드 체크")
 	@DeleteMapping("/ticket/{ticketId}")
-	public ResponseEntity<?> deleteTicket(@PathVariable Long ticketId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.deleteTicket(ticketId, userDetails.getUser());
+	public ResponseEntity<?> deleteTicket(
+		@PathVariable Long ticketId,
+		@PathVariable Long taskId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ticketService.deleteTicket(ticketId, taskId, userDetails.getUser());
 	}
 }
-

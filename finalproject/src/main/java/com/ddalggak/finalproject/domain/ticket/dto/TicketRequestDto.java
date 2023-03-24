@@ -1,27 +1,43 @@
 package com.ddalggak.finalproject.domain.ticket.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
+import com.ddalggak.finalproject.domain.ticket.entity.TicketStatus;
+
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class TicketRequestDto {
-	@Schema(name = "티켓 이름")
+	private Long ticketId;
 	private String ticketTitle;
-	@Schema(name = "티켓 내용")
 	private String ticketDescription;
-	@Schema(name = "티켓 중요도")
 	private Long priority;
-	@Schema(name = "티켓 난이도")
 	private Long difficulty;
-	@Schema(name = "티켓 작성자")
 	private String assigned;
-	@Schema(name = "티켓 마감 날짜")
-	private LocalDateTime expiredAt;
-	@Schema(name = "댓글 작성")
-	private String comment;
+	private LocalDate expiredAt;
+	private TicketStatus status;
+
+
+	@Builder
+	public TicketRequestDto(Ticket t) {
+		this.ticketId = t.getTicketId();
+		this.ticketTitle = t.getTicketTitle();
+		this.ticketDescription = t.getTicketDescription();
+		this.priority = (long)t.getPriority();
+		this.difficulty = (long)t.getDifficulty();
+		this.assigned = t.getAssigned();
+		this.status = t.getStatus();
+		this.expiredAt = LocalDate.from(t.getExpiredAt());
+	}
+
+	public static TicketResponseDto of(Ticket ticket) {
+		return TicketResponseDto.builder()
+			.ticket(ticket)
+			.build();
+	}
 }
