@@ -35,6 +35,7 @@ public enum ErrorCode {
 	PROJECT_NOT_FOUND(NOT_FOUND, "D-007", "해당 프로젝트를 찾을 수 없습니다."),
 	TASK_NOT_FOUND(NOT_FOUND, "D-008", "해당 태스크를 찾을 수 없습니다."),
 	LABEL_NOT_FOUND(NOT_FOUND, "D-009", "해당 라벨을 찾을 수 없습니다"),
+	EMAIL_NOT_FOUND(NOT_FOUND, "D-010", "해당 이메일을 찾을 수 없습니다"),
 
 	/* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 	DUPLICATE_RESOURCE(CONFLICT, "E-001", "데이터가 이미 존재합니다."),

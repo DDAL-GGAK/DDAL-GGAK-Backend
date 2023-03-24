@@ -54,20 +54,20 @@ public class TaskController {
 		return taskService.deleteTask(user.getUser(), taskId);
 	}
 
-	@Operation(summary = "Task 리더 부여", description = "api for assign admin to task")
-	@PostMapping("/task/{taskId}/admin")
-	public ResponseEntity<SuccessResponseDto> assignAdmin(
+	@Operation(summary = "Task 리더 부여 및 해제", description = "api for assign/dismiss admin to task")
+	@PostMapping("/task/{taskId}/leader")
+	public ResponseEntity<SuccessResponseDto> manageLeader(
 		@AuthenticationPrincipal UserDetailsImpl user,
 		@PathVariable Long taskId,
-		@Valid @RequestBody TaskRequestDto taskRequestDto) {
-		return taskService.assignLeader(user.getUser(), taskRequestDto, taskId);
+		@RequestBody TaskRequestDto taskRequestDto) {
+		return taskService.manageLeader(user.getUser(), taskRequestDto, taskId);
 	}
 
 	@Operation(summary = "Task 초대", description = "api for invite user to task")
 	@PostMapping("/task/{taskId}/invite")
 	public ResponseEntity<SuccessResponseDto> inviteTask(
 		@AuthenticationPrincipal UserDetailsImpl user,
-		@Valid @RequestBody TaskRequestDto taskRequestDto,
+		@RequestBody TaskRequestDto taskRequestDto,
 		@PathVariable Long taskId) {
 		return taskService.inviteTask(user.getUser(), taskRequestDto, taskId);
 	}
