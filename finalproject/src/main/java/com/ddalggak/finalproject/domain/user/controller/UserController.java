@@ -12,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ddalggak.finalproject.domain.user.dto.EmailRequestDto;
+import com.ddalggak.finalproject.domain.user.dto.NicknameRequestDto;
 import com.ddalggak.finalproject.domain.user.dto.UserRequestDto;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.domain.user.repository.UserRepository;
@@ -38,7 +38,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
@@ -46,7 +46,7 @@ public class UserController {
 	private final UserRepository userRepository;
 	private final MailService mailService;
 
-	@PostMapping("/email")
+	@PostMapping("/auth/email")
 	public ResponseEntity<?> emailAuthentication(@Valid @RequestBody EmailRequestDto emailRequestDto,
 		BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -54,14 +54,14 @@ public class UserController {
 			for (ObjectError e : list) {
 				System.out.println(e.getDefaultMessage());
 			}
-
+			return ErrorResponse.from(ErrorCode.INVALID_REQUEST);
 		}
 		mailService.sendMail(emailRequestDto.getEmail());
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_SEND);
 
 	}
 
-	@PostMapping("/signup")
+	@PostMapping("/auth/signup")
 	public ResponseEntity<?> signup(@Valid @RequestBody UserRequestDto userRequestDto,
 		BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -69,7 +69,7 @@ public class UserController {
 			for (ObjectError e : list) {
 				System.out.println(e.getDefaultMessage());
 			}
-
+			return ErrorResponse.from(ErrorCode.INVALID_REQUEST);
 		}
 
 		userService.signup(userRequestDto);
@@ -78,14 +78,14 @@ public class UserController {
 
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/auth/login")
 	public ResponseEntity<?> login(@RequestBody UserRequestDto userRequestDto, HttpServletResponse response) {
 		userService.login(userRequestDto, response);
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGIN);
 
 	}
 
-	@PostMapping("/logout")
+	@PostMapping("/auth/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		String token = jwtUtil.resolveToken(request);
 		Claims claims;
@@ -109,10 +109,17 @@ public class UserController {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGOUT);
 	}
 
-	@PutMapping("/{nickname}")
-	public ResponseEntity<?> updateNickname(@PathVariable String nickname,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		userService.updateNickname(nickname, userDetails.getEmail());
+	@PutMapping("/auth/{nickname}")
+	public ResponseEntity<?> updateNickname(@Valid @RequestBody NicknameRequestDto nicknameRequestDto,
+		@AuthenticationPrincipal UserDetailsImpl userDetails, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			List<ObjectError> list = bindingResult.getAllErrors();
+			for (ObjectError e : list) {
+				System.out.println(e.getDefaultMessage());
+			}
+			return ErrorResponse.from(ErrorCode.INVALID_REQUEST);
+		}
+		userService.updateNickname(nicknameRequestDto.getNickname(), userDetails.getEmail());
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
 	}
 
@@ -123,7 +130,7 @@ public class UserController {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
 	}
 
-	@GetMapping("/mypage")
+	@GetMapping("/user")
 	public ResponseEntity<?> getMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return userService.getMyPage(userDetails.getEmail());
 	}
