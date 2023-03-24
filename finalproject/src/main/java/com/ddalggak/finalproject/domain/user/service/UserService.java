@@ -58,7 +58,7 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseEntity<UserPageDto> login(UserRequestDto userRequestDto, HttpServletResponse response) {
+	public void login(UserRequestDto userRequestDto, HttpServletResponse response) {
 		String email = userRequestDto.getEmail();
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 		String password = userRequestDto.getPassword();
