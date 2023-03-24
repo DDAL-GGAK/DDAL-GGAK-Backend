@@ -1,5 +1,7 @@
 package com.ddalggak.finalproject.domain.task.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Task Controller", description = "Task 관련 API입니다.")
 @RestController
-@RequestMapping("/api/project/{projectId}")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class TaskController {
 	private final TaskService taskService;
@@ -31,37 +33,43 @@ public class TaskController {
 	@PostMapping("/task")
 	public ResponseEntity<?> createTask(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@PathVariable Long projectId,
-		@RequestBody TaskRequestDto taskRequestDto) {
-		return taskService.createTask(projectId, userDetails.getUser(), taskRequestDto);
+		@Valid @RequestBody TaskRequestDto taskRequestDto) {
+		return taskService.createTask(userDetails.getUser(), taskRequestDto);
 	}
 
 	@Operation(summary = "Task 조회", description = "api for view one task")
 	@GetMapping("/task/{taskId}")
 	public ResponseEntity<TaskResponseDto> viewTask(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@PathVariable Long projectId,
+		@Valid @RequestBody TaskRequestDto taskRequestDto,
 		@PathVariable Long taskId) {
-		return taskService.viewTask(userDetails.getUser(), projectId, taskId);
+		return taskService.viewTask(userDetails.getUser(), taskRequestDto.getProjectId(), taskId);
 	}
 
 	@Operation(summary = "Task 삭제", description = "api for delete one task")
 	@DeleteMapping("/task/{taskId}")
 	public ResponseEntity<SuccessResponseDto> deleteTask(
 		@AuthenticationPrincipal UserDetailsImpl user,
-		@PathVariable Long projectId,
 		@PathVariable Long taskId) {
-		return taskService.deleteTask(user.getUser(), projectId, taskId);
+		return taskService.deleteTask(user.getUser(), taskId);
 	}
 
 	@Operation(summary = "Task 리더 부여", description = "api for assign admin to task")
-	@PostMapping("/{taskId}/admin")
+	@PostMapping("/task/{taskId}/admin")
 	public ResponseEntity<SuccessResponseDto> assignAdmin(
 		@AuthenticationPrincipal UserDetailsImpl user,
-		@PathVariable Long projectId,
 		@PathVariable Long taskId,
-		@RequestBody String email) {
-		return taskService.assignLeader(user.getUser(), projectId, taskId, email);
+		@Valid @RequestBody TaskRequestDto taskRequestDto) {
+		return taskService.assignLeader(user.getUser(), taskRequestDto, taskId);
+	}
+
+	@Operation(summary = "Task 초대", description = "api for invite user to task")
+	@PostMapping("/task/{taskId}/invite")
+	public ResponseEntity<SuccessResponseDto> inviteTask(
+		@AuthenticationPrincipal UserDetailsImpl user,
+		@Valid @RequestBody TaskRequestDto taskRequestDto,
+		@PathVariable Long taskId) {
+		return taskService.inviteTask(user.getUser(), taskRequestDto, taskId);
 	}
 
 }

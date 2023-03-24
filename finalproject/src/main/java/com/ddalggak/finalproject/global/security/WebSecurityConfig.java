@@ -53,6 +53,8 @@ public class WebSecurityConfig {
 		http.authorizeRequests()
 			.antMatchers("/api/auth/**")
 			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/user")
+			.permitAll()
 			.antMatchers(HttpMethod.GET, "/api/project/**")
 			.permitAll()
 			.antMatchers(HttpMethod.GET, "/api/task/**")

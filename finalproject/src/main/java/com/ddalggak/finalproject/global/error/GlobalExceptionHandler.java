@@ -7,9 +7,14 @@ import java.io.IOException;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.ddalggak.finalproject.domain.user.exception.UserException;
@@ -63,9 +68,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	/*
+	 * BindingResult로 에러 나왔을 때 처리
+	 */
+
+	@Override
+	protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers,
+		HttpStatus status,
+		WebRequest request) {
+		log.error("handleBindException throws BindException : {}", ex.getMessage());
+		return ErrorResponse.from(INVALID_REQUEST, ex.getBindingResult());
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+		HttpHeaders headers, HttpStatus status, WebRequest request) {
+		log.error("handleBindException throws BindException : {}", ex.getMessage());
+		return ErrorResponse.from(INVALID_REQUEST, ex.getBindingResult());
+	}
+
+
+	/*
 	 * 이외의 예외처리
 	 */
 
+	@ExceptionHandler(Exception.class)
 	private ResponseEntity<ErrorResponse> handleExceptionInternal(ErrorCode errorCode, String message) {
 		return ResponseEntity.status(errorCode.getHttpStatus())
 			.body(makeErrorResponse(errorCode, message));

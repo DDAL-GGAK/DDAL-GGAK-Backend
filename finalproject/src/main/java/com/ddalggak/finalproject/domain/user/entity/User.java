@@ -7,31 +7,28 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.ddalggak.finalproject.domain.label.entity.LabelUser;
 import com.ddalggak.finalproject.domain.project.entity.ProjectUser;
 import com.ddalggak.finalproject.domain.task.entity.TaskUser;
 import com.ddalggak.finalproject.domain.user.role.UserRole;
-
+import com.ddalggak.finalproject.global.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "Users")
 @Builder
-public class User {
+
+public class User extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
@@ -51,25 +48,21 @@ public class User {
 	@Column
 	@Enumerated(value = EnumType.STRING)
 	private UserRole role;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "labelId")
-	private Label label;
-
 	@OneToMany(mappedBy = "user")
 	List<ProjectUser> projectUserList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
 	List<TaskUser> taskUserList = new ArrayList<>();
 
-	public User(Long userId, String email, String nickname, String password, String profile, UserRole role,
-		Label label) {
+	@OneToMany(mappedBy = "user")
+	List<LabelUser> labelUserList = new ArrayList<>();
+
+	public User(Long userId, String email, String nickname, String password, String profile, UserRole role) {
 		this.userId = userId;
 		this.email = email;
 		this.nickname = nickname;
 		this.password = password;
 		this.profile = profile;
 		this.role = role;
-		this.label = label;
 	}
 }

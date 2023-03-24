@@ -57,17 +57,10 @@ public class UserService {
 
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public void login(UserRequestDto userRequestDto, HttpServletResponse response) {
 		String email = userRequestDto.getEmail();
-
-		Optional<User> optionalUser = userRepository.findByEmail(email);
-
-		if (optionalUser.isEmpty()) {
-			throw new UserException(ErrorCode.UNAUTHORIZED_MEMBER);
-		}
-
-		User user = optionalUser.get();
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 		String password = userRequestDto.getPassword();
 		String dbPassword = user.getPassword();
 
@@ -78,8 +71,14 @@ public class UserService {
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER,
 			jwtUtil.login(email, user.getRole()));
 
+		UserPageDto userPage = new UserPageDto(user);
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(userPage);
 	}
 
+	@Transactional
 	public void updateNickname(String nickname, String email) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -89,7 +88,6 @@ public class UserService {
 			.password(user.getPassword())
 			.nickname(nickname)
 			.profile(user.getProfile())
-			.label(user.getLabel())
 			.build();
 		userRepository.save(updatedUser);
 	}
@@ -109,7 +107,6 @@ public class UserService {
 			.password(user.getPassword())
 			.nickname(user.getNickname())
 			.profile(storedFileName)
-			.label(user.getLabel())
 			.build();
 		userRepository.save(updatedUser);
 
@@ -135,6 +132,7 @@ public class UserService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public ResponseEntity<?> getMyPage(String email) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
 
