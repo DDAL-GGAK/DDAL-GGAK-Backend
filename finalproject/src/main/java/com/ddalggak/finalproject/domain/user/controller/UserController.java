@@ -109,7 +109,7 @@ public class UserController {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_LOGOUT);
 	}
 
-	@PutMapping("/auth/{nickname}")
+	@PutMapping("/user/nickname")
 	public ResponseEntity<?> updateNickname(@Valid @RequestBody NicknameRequestDto nicknameRequestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -123,7 +123,7 @@ public class UserController {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
 	}
 
-	@PutMapping("/profile")
+	@PutMapping("/user/profile")
 	public ResponseEntity<?> updateProfile(@RequestPart(value = "image") MultipartFile image,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 		userService.updateProfile(image, userDetails.getEmail());
