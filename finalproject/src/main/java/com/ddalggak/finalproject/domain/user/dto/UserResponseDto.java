@@ -24,7 +24,7 @@ public class UserResponseDto {
 		this.id = projectUser.getUser().getUserId();
 		this.email = projectUser.getUser().getEmail();
 		this.nickname = projectUser.getUser().getNickname();
-		// this.thumbnail = projectUser.getUser().getThumbnail();
+		this.thumbnail = projectUser.getUser().getProfile();
 	}
 
 	public static UserResponseDto of(ProjectUser projectUser) {
