@@ -77,8 +77,8 @@ jobs:
 
         - name: Upload to S3
           run: aws s3 cp 
-            --region ap-northeast-2 ./finalproject.zip s3://ddal-ggak-codedeploy-app/
-#             --acl private ./ddal-ggak-codedeploy-app.zip s3://ddal-ggak-codedeploy-app/
+            --region ap-northeast-2 ./ddal-ggak-codedeploy-app.zip s3://ddal-ggak-codedeploy-app/
+            --acl private ./ddal-ggak-codedeploy-app.zip s3://ddal-ggak-codedeploy-app/
         - name: Code Deploy
           run: aws deploy create-deployment 
             --ddal-ggak-codedeploy-app 
