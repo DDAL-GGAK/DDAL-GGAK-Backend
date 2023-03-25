@@ -80,8 +80,7 @@ public class TicketController {
 	@DeleteMapping("/ticket/{ticketId}")
 	public ResponseEntity<?> deleteTicket(
 		@PathVariable Long ticketId,
-		@PathVariable Long taskId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.deleteTicket(ticketId, taskId, userDetails);
+		return ticketService.deleteTicket(ticketId, userDetails.getUser());
 	}
 }

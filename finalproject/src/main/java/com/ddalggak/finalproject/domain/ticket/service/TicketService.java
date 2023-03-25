@@ -27,6 +27,7 @@ import com.ddalggak.finalproject.domain.user.repository.UserRepository;
 import com.ddalggak.finalproject.global.dto.SuccessCode;
 import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.error.CustomException;
+import com.ddalggak.finalproject.global.error.ErrorCode;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -194,17 +195,15 @@ public class TicketService {
 
 		// 티켓 삭제하기
 		@Transactional
-		public ResponseEntity<?> deleteTicket(Long ticketId,
-			Long taskId, UserDetailsImpl userDetails) {
-			User user = userDetails.getUser();
-			// Task task = validateTask(ticketRequestDto.getTaskId());
-			Ticket ticket =  ticketRepository.findById(ticketId).orElseThrow(
+		public ResponseEntity<?> deleteTicket(Long ticketId, User user) {
+			Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 				() -> new CustomException(TICKET_NOT_FOUND));
-
-			if (user.getEmail().equals(ticket.getLabelLeader()))
+			if (user.getEmail().equals(ticket.getUserList().getEmail()))
 				ticketRepository.deleteById(ticketId);
-			else throw new CustomException(UNAUTHORIZED_USER);
-			return SuccessResponseDto.toResponseEntity(SuccessCode.UPDATED_SUCCESSFULLY);
+			else
+				throw new CustomException(UNAUTHORIZED_USER);
+			return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
+
 		}
 
 	/* == 반복 로직 == */
@@ -259,6 +258,9 @@ private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetai
 	}
 
 	private void validateExistTeam(Task task, TaskUser taskUser) {
+		if(!task.getTaskLeader().contains(taskUser.toString())) {
+			throw new CustomException(UNAUTHORIZED_USER);
+		}
 	}
 
 	// private void validateExistMember(Task task, TaskUser taskUser) {
