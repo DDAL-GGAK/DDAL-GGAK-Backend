@@ -45,10 +45,10 @@ jobs:
         # 디렉토리 생성
         - name: Make Directory
           run: mkdir -p deploy
-        # (2) application.properties 추가
-        - run: touch ./src/main/resources/application.yml
-        - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
-        - run: cat ./src/main/resources/application.yml
+#         # (2) application.properties 추가
+#         - run: touch ./src/main/resources/application.yml
+#         - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+#         - run: cat ./src/main/resources/application.yml
 
         # Jar 파일 복사
 #         - name: Copy Jar
