@@ -1,0 +1,339 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+# Repo Action 페이지에 나타날 이름 
+name: Java CI with Gradle CI/CD
+
+# Event Trigger
+# master branch에 push 또는 pull request가 발생할 경우 동작
+# branch 단위 외에도, tag나 cron 식 등을 사용할 수 있음 
+on:
+  push:
+    branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+permissions:
+  contents: read  
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: ddal-ggak-codedeploy-app
+  CODE_DEPLOY_APPLICATION_NAME: codedeploy
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: codedeploy_g
+  ZIP_NAME: zip -r ./finalproject.zip .
+jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up JDK 11
+          uses: actions/setup-java@v1
+          with:
+            java-version: 11
+            cache: gradle
+        - name: init with Gradle
+          uses: gradle/gradle-build-action@v2
+        - run: gradle init
+        - name: Build with Gradle
+          uses: gradle/gradle-build-action@v2
+          with:
+            gradle-version: 7.5.1
+            arguments: build 
+            
+
+        - name: Grant execute permission for gradlew
+          run: chmod +x gradlew
+          shell: bash
+        # 디렉토리 생성
+        - name: Make Directory
+          run: mkdir -p deploy
+
+        # Jar 파일 복사
+#         - name: Copy Jar
+#           run: cp ./build/libs/*.jar ./deploy
+#         - name: Build with Gradle
+#           run: ./gradlew clean build
+#           shell: bash
+
+        - name: Make zip file
+          run: zip -r ./$ddal-ggak-codedeploy-app.zip .
+          shell: bash
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION }}
+
+#               AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#               AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#               AWS_REGION: ap-nortgeast-2
+#               AWS_REGION: ${{ secrets.AWS_REGION }}
+
+#         - name: Upload to S3
+#           run: aws s3 cp 
+#             --region ap-northeast-2 ./ddal-ggak-codedeploy-app_build.zip s3://ddal-ggak-codedeploy-app_build.zip
+#             --acl private ./ddal-ggak-codedeploy-app.zip s3://ddal-ggak-codedeploy-app/
+
+        - name: Upload to AWS S3
+          run: |
+            aws deploy push \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --ignore-hidden-files \
+            --s3-location s3://ddal-ggak-codedeploy-app/$GITHUB_SHA.zip \
+            --source .
+            
+#         - name: Upload to AWS S3
+#           run: |
+#             aws deploy push \
+#             --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+#             --ignore-hidden-files \
+#             --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+#             --source .
+            
+#         - name: Code Deploy
+#           run: aws deploy create-deployment 
+#             --ddal-ggak-codedeploy-app 
+#             --ddal-ggak-codedeploy-deployment-group  
+#             --s3-location bucket=isntyet-deploy,bundleType=zip,
+#             key=finalproject/finalproject.zip
+# # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+#         - name: Deploy to AWS EC2 from S3
+#           run: |
+#              aws deploy create-deployment \
+#                --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#                --deployment-config-name CodeDeployDefault.AllAtOnce \
+#                --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#                --s3-location bucket=$ddal-ggak-codedeploy-app,key=$GITHUB_SHA.zip,bundleType=zip 
+# (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+#         - name: Deploy to AWS EC2 from S3
+#           run: |
+#             aws deploy create-deployment \
+#               --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#               --deployment-config-name CodeDeployDefault.AllAtOnce \
+#               --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#               --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip         - name: Upload to S3
+#           env:
+#             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#             AWS_REGION: ${{ secrets.AWS_REGION }}
+#           run: aws s3 cp --region ap-northeast-2 ./${GITHUB_SHA}_build.zip s3://jinho/smart-mirror/${GITHUB_SHA}_build.zip
+
+#         # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+#         - name: Configure AWS credentials
+#           uses: aws-actions/configure-aws-credentials@v1
+#           with:
+#               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+# #               aws-region: ${{ secrets.AWS_REGION }
+                  
+#          # (5) 빌드 결과물을 S3 버킷에 업로드
+#         - name: Upload to AWS S3
+#           run: |
+#              aws deploy push \
+#                --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#                --ignore-hidden-files \
+#                --s3-location s3://ddal-ggak-codedeploy-app/$GITHUB_SHA.zip \
+#                --source .
+#         # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+#         - name: Deploy to AWS EC2 from S3
+#           run: |
+#              aws deploy create-deployment \
+#                --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#                --deployment-config-name CodeDeployDefault.AllAtOnce \
+#                --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#                --s3-location bucket=$ddal-ggak-codedeploy-app,key=$GITHUB_SHA.zip,bundleType=zip          
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Set up JDK 11
+#       uses: actions/setup-java@v3
+#       with:
+#         java-version: '11'
+#         distribution: 'temurin'
+#     - name: init with Gradle
+#       uses: gradle/gradle-build-action@v2
+#     - run: gradle init
+#     - name: Build with Gradle
+#       uses: gradle/gradle-build-action@v2
+#       with:
+#         gradle-version: 7.5.1
+#         arguments: build
+    
+#     - name: Grant execute permission for gradlew
+#       run: chmod +x gradle
+#     - name: Build with Gradle
+#       run : ./gradle clean build
+#       #--exclude-task test 
+      
+#     # 전송할 파일을 담을 디렉토리 생성
+#     - name: Make Directory for deliver
+#       run: mkdir deploy
+      
+#     # Jar 파일 Copy
+#     - name: Copy Jar
+#       run: cp ./build/libs/*.jar ./deploy/
+      
+      
+      
+
+#     # 압축파일 형태로 전달
+#     - name: Make zip file
+#       run: zip -r -qq -j ./springboot-intro-build.zip ./deploy
+
+#     # S3 Bucket으로 copy
+#     - name: Deliver to AWS S3
+#       env:
+#         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       run: |
+#        	aws s3 cp \
+#        	--region ap-northeast-2 \
+#        	--acl private \ 
+# 	./springboot-intro-build.zip s3://springboot-intro-build/ 
+
+#     - name: Build with Gradle
+#       # uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+#       # with:
+#         # arguments: build
+#       run : ./gradle clean build 
+     
+#     - name: Grant execute permission for gradlew
+#       run: chmod +x gradlew
+
+#     # Build
+#     - name: Build with Gradle
+#       run: ./gradlew clean build
+
+#     # 전송할 파일을 담을 디렉토리 생성
+#     - name: Make Directory for deliver
+#       run: mkdir deploy
+ 
+
+    
+# jobs:
+#   build:
+  
+#     # 실행 환경 지정
+#     runs-on: ubuntu-latest
+    
+#     # Task의 sequence를 명시한다.
+#     steps:
+#     - uses: actions/checkout@v2
+    
+#     - name: Set up JDK 11
+#       uses: actions/setup-java@v1
+#       with:
+#         distribution: temurin
+#         java-version: '11'
+#         cache: gradle
+#     # (n) Gradlew 권한 설정      
+#     - name: Setup Gradle
+#       uses: gradle/gradle-build-action@v2
+#       with:
+#        arguments: build
+# #        gradle-executable: /path/to/installed/gradle
+#     - name: Grant execute permission for gradlew
+#       run: git update-index --chmod=+x gradle
+    
+#     - name: Build with Gradle
+#       run: ./gradle clean build
+      
+   
+# name: Run Gradle on PRs
+# on: pull_request
+# jobs:
+#   gradle:
+#     strategy:
+#       matrix:
+#         os: [ubuntu-latest, macos-latest, windows-latest]
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#     - uses: actions/setup-java@v3
+#       with:
+#         distribution: temurin
+#         java-version: 11
+        
+#     - name: Setup Gradle
+#       uses: gradle/gradle-build-action@v2
+    
+#     - name: Execute Gradle build
+#       run: ./gradlew build
+
+
+
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# env:
+#   AWS_REGION: ap-northeast-2
+#   S3_BUCKET_NAME: ddal-ggak-codedeploy-app
+#   CODE_DEPLOY_APPLICATION_NAME: ddal-ggak-codedeploy-app
+#   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ddal-ggak-codedeploy-deployment-group
+
+# jobs:
+#   build:
+#     name: Deploy
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # (1) 기본 체크아웃
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       # (2) JDK 11 세팅
+#       - name: Set up JDK 11
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: 'temurin'
+#           java-version: '11'
+#       # (3) Gradle build (Test 제외)
+# #       - name: Build with Gradle
+# #         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
+# #         with:
+# #           arguments: clean build -x test  
+#       - name: Build with Gradle
+#         run: ./gradle clean build
+        # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.AWS_REGION }}
+
+#         # (5) 빌드 결과물을 S3 버킷에 업로드
+#     - name: Upload to AWS S3
+#       run: |
+#          aws deploy push \
+#            --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#            --ignore-hidden-files \
+#            --s3-location s3://ddal-ggak-codedeploy-app/$GITHUB_SHA.zip \
+#            --source .
+
+#     # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+#     - name: Deploy to AWS EC2 from S3
+#       run: |
+#          aws deploy create-deployment \
+#            --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#            --deployment-config-name CodeDeployDefault.AllAtOnce \
+#            --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#            --s3-location bucket=$ddal-ggak-codedeploy-app,key=$GITHUB_SHA.zip,bundleType=zip
+
+#  # env:
+#     AWS_REGION: ap-northeast-2
+#     S3_BUCKET_NAME: ddal-ggak-codedeploy-app
+#     CODE_DEPLOY_APPLICATION_NAME: ddal-ggak-codedeploy-app
+#     CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ddal-ggak-codedeploy-deployment-group 

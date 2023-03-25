@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentRequestDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
-import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
 import com.ddalggak.finalproject.domain.ticket.comment.entity.Comment;
 import com.ddalggak.finalproject.domain.ticket.comment.repository.CommentRepository;
 import com.ddalggak.finalproject.domain.ticket.repository.TicketRepository;
@@ -41,17 +41,18 @@ public class CommentService {
 	// }
 	@Transactional
 	public ResponseEntity<SuccessResponseDto> createComment(UserDetailsImpl userDetails, Long ticketId,
-		CommentResponseDto commentResponseDto) {
+		Long commentId, CommentRequestDto commentRequestDto) {
+		System.out.println("--------user = " + userDetails.getEmail());
 		User user = userDetails.getUser();
 		Ticket ticket = getTicket(ticketId);
 		// if (ticket) {
 		// 	throw new CustomException(TICKET_NOT_FOUND);
 		// }
 		// comment 작성
-		Comment comment =  new Comment(user, ticket, commentResponseDto);
+		Comment comment =  new Comment(user, ticket, commentRequestDto);
 		commentRepository.save(comment);
 		// 상태 반환
-		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
+		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_UPLOAD);
 	}
 	// comment 전체 조회
 	// @Transactional
@@ -63,17 +64,17 @@ public class CommentService {
 	// }
 	// comment 수정하기
 	@Transactional
-	public ResponseEntity<SuccessResponseDto> updateComment(Long ticketId,
-		CommentResponseDto commentResponseDto, UserDetailsImpl userDetails) {
+	public ResponseEntity<SuccessResponseDto> updateComment(Long ticketId, Long commentId,
+		CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
 		User user = userDetails.getUser();
 		Comment comment = commentRepository.findById(ticketId).orElseThrow(
 			() -> new CustomException(COMMENT_NOT_FOUND));
 
 		if (user.getEmail().equals(comment.getUser().getEmail()))
-			comment.update(commentResponseDto.getComment());
+			comment.update(commentRequestDto.getComment());
 		else throw new CustomException(UNAUTHORIZED_USER);
 		// return ResponseEntity.ok().body(TicketResponseDto.of(ticket));
-		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
+		return SuccessResponseDto.toResponseEntity(SuccessCode.UPDATED_SUCCESSFULLY);
 
 	}
 	// comment 삭제하기
@@ -91,11 +92,11 @@ public class CommentService {
 	public ResponseEntity<SuccessResponseDto> deleteComment(UserDetailsImpl userDetails, Long ticketId, Long commentId) {
 		Ticket ticket = getTicket(ticketId);
 		Comment comment = getComment(commentId);
-		checkValidation(ticket, comment, userDetails);
+		validationComment(ticket, comment, userDetails);
 		// 삭제
 		commentRepository.delete(comment);
 		// 상태 반환
-		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
+		return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
 	}
 
 	/* == 반복 로직 == */
@@ -104,17 +105,16 @@ public class CommentService {
 	private Ticket getTicket(Long ticketId) {
 		return ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
 	}
-
 	// comment 유무 확인
 	private Comment getComment(Long commentId) {
-		return commentRepository.findById(commentId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COMMENT));
+		return commentRepository.findById(commentId).orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 	}
 
 	// comment 유효성 검사
-	private void checkValidation(Ticket ticket, Comment comment, UserDetailsImpl userDetails) {
+	private void validationComment(Ticket ticket, Comment comment, UserDetailsImpl userDetails) {
 		// ticket에 해당 comment가 있는지 검사
 		if(!comment.getTicket().getTicketId().equals(ticket.getTicketId()))
-			throw new CustomException(NOT_FOUND_COMMENT);
+			throw new CustomException(COMMENT_NOT_FOUND);
 		// comment 작성자와 요청자의 일치 여부 검사
 		if(!comment.getUser().getUserId().equals(userDetails.getUser().getUserId()))
 			throw new CustomException(UNAUTHORIZED_MEMBER);

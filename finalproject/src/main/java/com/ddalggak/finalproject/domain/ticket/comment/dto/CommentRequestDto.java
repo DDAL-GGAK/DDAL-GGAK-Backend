@@ -1,11 +1,23 @@
-// package com.ddalggak.finalproject.domain.ticket.comment.dto;
-//
-// import lombok.Getter;
-// import lombok.NoArgsConstructor;
-//
-// @Getter
-// @NoArgsConstructor
-// public class CommentRequestDto{
-// 	public CommentRequestDto(String comments) { this.comments = comments; }
-// 	private String comments;
-// }
+package com.ddalggak.finalproject.domain.ticket.comment.dto;
+
+import com.ddalggak.finalproject.domain.ticket.comment.entity.Comment;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class CommentRequestDto{
+	private Long commentId;
+	private String comment;
+	private String email;
+
+	@Builder
+	public CommentRequestDto(Comment c) {
+		this.commentId = c.getCommentId();
+		this.comment = c.getComment();
+		this.email = c.getUser().getEmail();
+
+	}
+}

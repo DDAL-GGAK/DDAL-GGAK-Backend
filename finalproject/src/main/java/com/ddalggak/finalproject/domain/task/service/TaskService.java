@@ -1,5 +1,7 @@
 package com.ddalggak.finalproject.domain.task.service;
 
+import java.util.Objects;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,17 +35,16 @@ public class TaskService {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public ResponseEntity<?> createTask(Long projectId, User user, TaskRequestDto taskRequestDto) {
-		Project project = validateProject(projectId);
+	public ResponseEntity<?> createTask(User user, TaskRequestDto taskRequestDto) {
+		Project project = validateProject(taskRequestDto.projectId);
 		validateExistMember(project, ProjectUser.create(project, user));
-		if (!(project.getProjectLeader().equals(user.getEmail())) || project.getTaskLeadersList()
-			.contains(user.getEmail())) {
+		if (!(project.getProjectLeader().equals(user.getEmail()) || project.getTaskLeadersList()
+			.contains(user.getEmail()))) {
 			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
 		}
 		TaskUserRequestDto taskUserRequestDto = TaskUserRequestDto.create(user);
 		TaskUser taskUser = TaskUser.create(taskUserRequestDto);
 		Task task = Task.create(taskRequestDto, taskUser, project);
-		task.setTaskLeader(user.getEmail()); //todo taskLeader가 지금 task와 연동 안돼있음.
 		taskRepository.save(task);
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
@@ -57,10 +58,11 @@ public class TaskService {
 	}
 
 	@Transactional
-	public ResponseEntity<SuccessResponseDto> deleteTask(User user, Long projectId, Long taskId) {
+	public ResponseEntity<SuccessResponseDto> deleteTask(User user, Long taskId) {
 		Task task = validateTask(taskId);
-		if (task.getProject().getProjectLeader().equals(user.getEmail()) || task.getTaskLeader()
-			.equals(user.getEmail())) {
+		if (task.getProject().getProjectLeader().equals(user.getEmail()) ||
+			Objects.equals(task.getTaskLeader(), user.getEmail())) {
+			task.getProject().deleteTaskLeader(task);
 			taskRepository.delete(task);
 		} else {
 			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
@@ -68,27 +70,51 @@ public class TaskService {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
 	}
 
-	@Transactional(readOnly = true) // todo 로직 바꾸기
-	public ResponseEntity<?> inviteTask(String email, Long projectId, Long taskId,
-		TaskUserRequestDto taskUserRequestDto) {
+	/*
+	 * 프로젝트 리더이거나 taskLeader인 경우만 가능,
+	 * 혹시 다른 taskLeader는 초대못할경우 task.getTaskLeader().equals(user.getEmail())로 검증
+	 */
+	@Transactional
+	public ResponseEntity<SuccessResponseDto> inviteTask(User user, TaskRequestDto taskRequestDto, Long taskId) {
 		Task task = validateTask(taskId);
-		Project project = validateProject(projectId);
-
+		Project project = validateProject(taskRequestDto.getProjectId());
+		User invited = userRepository.findByEmail(taskRequestDto.getEmail())
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
+			);
+		TaskUser taskUser = TaskUser.create(task, invited);
+		// 유효성 검증
+		if (task.getTaskUserList().contains(taskUser)) {
+			throw new CustomException(ErrorCode.DUPLICATE_MEMBER);
+		} else if (project.getProjectLeader().equals(user.getEmail()) || project.getTaskLeadersList()
+			.contains(user.getEmail())) {
+			validateExistMember(project, ProjectUser.create(project, invited)); // user가 프로젝트에 있는 유저인지 검증
+			task.addTaskUser(taskUser); // task에 넣기
+			taskRepository.save(task);
+		} else {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
 		return SuccessResponseDto.toResponseEntity(SuccessCode.JOINED_SUCCESSFULLY);
 	}
 
-	/*
-	 * 지금은 projectId가 필요하지 않지만 만약 taskId가 아닌 taskName을 url로 지정하게 될 경우 projectId가 필요할 수 있음.
-	 */
-	@Transactional
-	public ResponseEntity<SuccessResponseDto> assignLeader(User user, Long projectId, Long taskId, String email) {
-		User userToLeader = validateUserByEmail(email);
+	@Transactional // task 리더면 일반인으로, 반대는 리더로
+	public ResponseEntity<SuccessResponseDto> manageLeader(User user, TaskRequestDto taskRequestDto, Long taskId) {
+		User userToManage = validateUserByEmail(taskRequestDto.getEmail());
 		Task task = validateTask(taskId);
-		validateExistMember(task, TaskUser.create(task, userToLeader));
+		validateExistMember(task, TaskUser.create(task, userToManage));
 		if (task.getProject().getProjectLeader().equals(user.getEmail())) {
-			task.setTaskLeader(email);
+			if (task.getTaskLeader() == null) {
+				task.setTaskLeader(userToManage.getEmail());
+				task.getProject().getTaskLeadersList().add(userToManage.getEmail());
+			} else if (!task.getTaskLeader().equals(userToManage.getEmail())) {
+				task.setTaskLeader(userToManage.getEmail());
+				task.getProject().getTaskLeadersList().remove(task.getTaskLeader());
+				task.getProject().getTaskLeadersList().add(userToManage.getEmail());
+			} else {
+				task.getProject().getTaskLeadersList().remove(userToManage.getEmail());
+				task.setTaskLeader(null);
+			}
 		} else {
-			throw new CustomException(ErrorCode.INVALID_REQUEST);
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
 		}
 		return SuccessResponseDto.toResponseEntity(SuccessCode.UPDATED_SUCCESSFULLY);
 	}

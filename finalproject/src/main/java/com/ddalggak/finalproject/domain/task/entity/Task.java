@@ -19,11 +19,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.StringUtils;
 
+import com.ddalggak.finalproject.domain.label.entity.Label;
 import com.ddalggak.finalproject.domain.project.entity.Project;
 import com.ddalggak.finalproject.domain.task.dto.TaskRequestDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
-import com.ddalggak.finalproject.domain.user.entity.Label;
 import com.ddalggak.finalproject.global.entity.BaseEntity;
 
 import lombok.AccessLevel;
@@ -35,6 +37,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Task extends BaseEntity {
 
 	@Id
@@ -75,7 +78,6 @@ public class Task extends BaseEntity {
 	public Task(TaskRequestDto taskRequestDto, TaskUser taskUser, Project project) {
 		taskTitle = taskRequestDto.getTaskTitle();
 		expiredAt = taskRequestDto.getExpiredAt();
-		taskLeader = taskUser.getUser().getEmail();
 		addProject(project);
 		addTaskUser(taskUser);
 	}
@@ -90,7 +92,7 @@ public class Task extends BaseEntity {
 
 	//연관관계 편의 메소드
 
-	private void addTaskUser(TaskUser taskUser) {
+	public void addTaskUser(TaskUser taskUser) {
 		taskUserList.add(taskUser);
 		taskUser.addTask(this);
 	}
@@ -98,5 +100,15 @@ public class Task extends BaseEntity {
 	private void addProject(Project project) {
 		this.project = project;
 		project.addTask(this);
+	}
+
+	public void addLabel(Label label) {
+		labelList.add(label);
+	}
+
+	public void deleteLabelLeader(Label label) {
+		if (StringUtils.hasText(label.getLabelLeader())) {
+			labelLeadersList.remove(label.getLabelLeader());
+		}
 	}
 }

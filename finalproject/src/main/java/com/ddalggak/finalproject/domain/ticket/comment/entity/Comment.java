@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
+import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentRequestDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 import com.ddalggak.finalproject.domain.user.entity.User;
 import com.ddalggak.finalproject.global.entity.BaseEntity;
@@ -33,8 +33,8 @@ public class Comment extends BaseEntity {
 	@JoinColumn(name = "userId")
 	private User user;
 
-	public Comment(User user, Ticket ticket, CommentResponseDto comments) {
-		// this.owner = this.getOwner();
+	public Comment(User user, Ticket ticket, CommentRequestDto comments) {
+		this.commentId = getCommentId();
 		this.user = user;
 		this.ticket = ticket;
 		this.comment = comments.getComment();
