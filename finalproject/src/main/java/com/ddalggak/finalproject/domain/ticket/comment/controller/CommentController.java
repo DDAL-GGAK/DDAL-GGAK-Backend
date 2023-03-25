@@ -23,19 +23,18 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Log Controller", description = "로그 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{ticketId}/comment")
+@RequestMapping("/api")
 public class CommentController {
 	private final CommentService commentService;
 
 	// 댓글 등록
 	@Operation(summary = "ticket comment", description = "comment 등록 post 메서드 체크")
-	@PostMapping("")
-	public ResponseEntity<?> createComment
-	(	@PathVariable Long ticketId,
+	@PostMapping("/comment")
+	public ResponseEntity<?> createComment(
+		@PathVariable Long ticketId,
 		@PathVariable Long commentId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody CommentRequestDto commentRequestDto
-	) {
+		@RequestBody CommentRequestDto commentRequestDto) {
 		return commentService.createComment(userDetails, ticketId, commentId, commentRequestDto);
 	}
 

@@ -42,6 +42,7 @@ public class CommentService {
 	@Transactional
 	public ResponseEntity<SuccessResponseDto> createComment(UserDetailsImpl userDetails, Long ticketId,
 		Long commentId, CommentRequestDto commentRequestDto) {
+		System.out.println("--------user = " + userDetails.getEmail());
 		User user = userDetails.getUser();
 		Ticket ticket = getTicket(ticketId);
 		// if (ticket) {
