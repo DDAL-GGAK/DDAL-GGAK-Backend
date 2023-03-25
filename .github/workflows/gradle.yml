@@ -54,8 +54,8 @@ jobs:
           run: mkdir -p deploy
 
         # Jar 파일 복사
-        - name: Copy Jar
-          run: cp ./build/libs/*.jar ./deploy
+#         - name: Copy Jar
+#           run: cp ./build/libs/*.jar ./deploy
 #         - name: Build with Gradle
 #           run: ./gradlew clean build
 #           shell: bash
