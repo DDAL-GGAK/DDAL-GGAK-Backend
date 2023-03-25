@@ -18,12 +18,12 @@ on:
 #     branches: [ "main" ]
 permissions:
   contents: read  
-env:
-  AWS_REGION: ap-northeast-2
-  S3_BUCKET_NAME: ddal-ggak-codedeploy-app
-  CODE_DEPLOY_APPLICATION_NAME: ddal-ggak-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ddal-ggak-codedeploy-deployment-group
-  ZIP_NAME: zip -r ./$GITHUB_SHA.zip .
+# env:
+#   AWS_REGION: ap-northeast-2
+#   S3_BUCKET_NAME: ddal-ggak-codedeploy-app
+#   CODE_DEPLOY_APPLICATION_NAME: ddal-ggak-codedeploy-app
+#   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ddal-ggak-codedeploy-deployment-group
+#   ZIP_NAME: zip -r ./$GITHUB_SHA.zip .
 jobs:
     build:
       runs-on: ubuntu-latest
