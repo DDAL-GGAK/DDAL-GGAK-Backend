@@ -21,8 +21,8 @@ permissions:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: ddal-ggak-codedeploy-app
-  CODE_DEPLOY_APPLICATION_NAME: ddal-ggak-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ddal-ggak-codedeploy-deployment-group
+  CODE_DEPLOY_APPLICATION_NAME: codedeploy
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: codedeploy_g
   ZIP_NAME: zip -r ./finalproject.zip .
 jobs:
     build:
