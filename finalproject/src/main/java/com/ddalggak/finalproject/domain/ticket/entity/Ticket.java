@@ -86,7 +86,7 @@ public class Ticket extends BaseEntity {
 		this.assigned = ticketRequestDto.getAssigned();
 		this.ticketExpiredAt = ticketRequestDto.getTicketExpiredAt();
 		// this.taskLeader = user.getEmail();
-		this.labelLeader = user.getEmail();
+		// this.labelLeader = user.getEmail();
 	}
 	public void update(TicketRequestDto ticketRequestDto, User user) {
 		this.ticketTitle = ticketRequestDto.getTicketTitle();

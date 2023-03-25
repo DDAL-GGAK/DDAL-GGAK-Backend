@@ -12,17 +12,17 @@ import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 import com.ddalggak.finalproject.domain.ticket.entity.TicketStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class TicketResponseDto {
 	@Schema(name = "ticket id", example = "1")
 	private Long ticketId;
 	@Schema(name = "ticket title", example = "ticket title")
 	private String ticketTitle;
-	@Schema(name = "label leader", example = "label leader")
-	private String labelLeader;
 	@Schema(name = "ticket description", example = "ticket description")
 	private String ticketDescription;
 	@Schema(name = "ticket priority", example = "ticket priority")
@@ -35,7 +35,8 @@ public class TicketResponseDto {
 	private LocalDate ticketExpiredAt;
 	@Schema(name = "total comments")
 	private List<CommentResponseDto> comments;
-
+	@Schema(name = "label leader", example = "label leader")
+	private String labelLeader;
 
 	@Builder
 	public TicketResponseDto(Ticket ticket, List<CommentResponseDto> comments) {
@@ -46,7 +47,7 @@ public class TicketResponseDto {
 		totalDifficulty = ticket.getTotalDifficulty();
 		assigned = ticket.getAssigned();
 		ticketExpiredAt = ticket.getTicketExpiredAt();
-		comments = comments;
+		// comments = ticket.getComment().stream().map(CommentResponseDto::of).collect(Collectors.toCollection());
 
 	}
 
@@ -55,11 +56,15 @@ public class TicketResponseDto {
 			.ticket(ticket)
 			.build();
 	}
-	// public static ResponseEntity<TicketResponseDto> ticketResponseDtoResponseEntity(Ticket ticket) {
+
+
+	// public static ResponseEntity<TicketResponseDto>ticketResponseDtoResponseEntity of(Ticket ticket) {
 	// 	return ResponseEntity
 	// 		.status(200)
 	// 		.body(TicketResponseDto.builder()
 	// 			.ticket(ticket)
 	// 			.build());
 	// }
+
+
 }

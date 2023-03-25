@@ -9,9 +9,10 @@ import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-
+@NoArgsConstructor
 public class TicketRequestDto {
 	@Schema(name = "task Id")
 	@NotNull(message = "task Id is required")

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
 import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
+import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 import com.ddalggak.finalproject.domain.ticket.service.TicketService;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
 
@@ -48,10 +49,12 @@ public class TicketController {
 	// 티켓 상세 조회
 	@Operation(summary = "get ticket", description = "Ticket 상세조회 get 메서드 체크")
 	@GetMapping("/ticket/{ticketId}")
-	public ResponseEntity<TicketResponseDto> getTicket(
-		@PathVariable Long ticketId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ticketService.getTicket(ticketId, userDetails.getUser().getEmail());
+	public Ticket getTicket(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@Valid @RequestBody TicketResponseDto ticketResponseDto,
+		@PathVariable Long ticketId
+		) {
+		return ticketService.getTicket(userDetails.getUser(), ticketResponseDto, ticketId);
 	}
 	// 티켓 상세 조회
 	// @Operation(summary = "get ticket", description = "Ticket 상세조회 get 메서드 체크")
