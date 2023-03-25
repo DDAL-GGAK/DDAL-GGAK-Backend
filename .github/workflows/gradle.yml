@@ -62,7 +62,7 @@ jobs:
           with:
 #             aws-access-key-id: $
 #             aws-secret-access-key: $
-              aws-region: ap-nortgeast-2
+#               aws-region: ap-nortgeast-2
               AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
               AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               AWS_REGION: ap-nortgeast-2
