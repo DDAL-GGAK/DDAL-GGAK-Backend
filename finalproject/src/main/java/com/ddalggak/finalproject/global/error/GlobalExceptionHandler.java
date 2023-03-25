@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<ErrorResponse> handleDataException() {
 		log.error("handleDataException throw Exception : {}", DUPLICATE_RESOURCE);
 		return ErrorResponse.of(DUPLICATE_RESOURCE);
+	}
+
+	@ExceptionHandler(value = {UsernameNotFoundException.class})
+	protected ResponseEntity<ErrorResponse> handleUsernameNotFoundException() {
+		log.error("handleUsernameNotFoundException throw Exception : {}", EMAIL_NOT_FOUND);
+		return ErrorResponse.from(EMAIL_NOT_FOUND);
 	}
 
 	/**

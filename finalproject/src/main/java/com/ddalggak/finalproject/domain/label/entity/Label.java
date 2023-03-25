@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 
 import com.ddalggak.finalproject.domain.label.dto.LabelRequestDto;
 import com.ddalggak.finalproject.domain.task.entity.Task;
@@ -28,6 +29,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Label extends BaseEntity {
 
 	@Id
@@ -69,7 +71,7 @@ public class Label extends BaseEntity {
 		task.addLabel(this);
 	}
 
-	private void addLabelUser(LabelUser labelUser) {
+	public void addLabelUser(LabelUser labelUser) {
 		labelUserList.add(labelUser);
 		labelUser.addLabel(this);
 	}
