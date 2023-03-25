@@ -42,7 +42,20 @@ public class LabelUser {
 			.build();
 	}
 
+	public static LabelUser create(Label label, User user) {
+		return LabelUser.builder()
+			.label(label)
+			.user(user)
+			.build();
+	}
+
 	public void addLabel(Label label) {
 		this.label = label;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		LabelUser labelUser = (LabelUser)obj;
+		return this.getUser().getUserId().equals(labelUser.getUser().getUserId());
 	}
 }

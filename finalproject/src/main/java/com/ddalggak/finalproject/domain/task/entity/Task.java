@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.StringUtils;
 
 import com.ddalggak.finalproject.domain.label.entity.Label;
 import com.ddalggak.finalproject.domain.project.entity.Project;
@@ -103,5 +104,11 @@ public class Task extends BaseEntity {
 
 	public void addLabel(Label label) {
 		labelList.add(label);
+	}
+
+	public void deleteLabelLeader(Label label) {
+		if (StringUtils.hasText(label.getLabelLeader())) {
+			labelLeadersList.remove(label.getLabelLeader());
+		}
 	}
 }

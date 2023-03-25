@@ -1,5 +1,7 @@
 package com.ddalggak.finalproject.domain.label.service;
 
+import java.util.Objects;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,9 @@ public class LabelService {
 	public ResponseEntity<SuccessResponseDto> createLabel(User user, LabelRequestDto labelRequestDto) {
 		Task task = validateTask(labelRequestDto.getTaskId());
 		validateExistMember(task, TaskUser.create(task, user));
-		if (!(task.getTaskLeader().equals(user.getEmail()) || task.getLabelLeadersList().contains(user.getEmail()))) {
+		if (!(task.getProject().getProjectLeader().equals(user.getEmail()) ||
+			task.getProject().getTaskLeadersList().contains(user.getEmail()) ||
+			task.getLabelLeadersList().contains(user.getEmail()))) {
 			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
 		}
 		LabelUserRequestDto labelUserRequestDto = LabelUserRequestDto.create(user);
@@ -47,15 +51,82 @@ public class LabelService {
 	}
 
 	@Transactional
-	public ResponseEntity<SuccessResponseDto> deleteLabel(User user, Long taskId, Long labelId) {
-		Task task = validateTask(taskId);
+	public ResponseEntity<SuccessResponseDto> deleteLabel(User user, LabelRequestDto labelRequestDto, Long labelId) {
+		Task task = validateTask(labelRequestDto.getTaskId());
 		Label label = validateLabel(labelId);
-		if (!(task.getTaskLeader().equals(user.getEmail()) || label.getLabelLeader().equals(user.getEmail()))) {
+		if (task.getProject().getProjectLeader().equals(user.getEmail()) ||
+			Objects.equals(task.getTaskLeader(), user.getEmail()) ||
+			Objects.equals(label.getLabelLeader(), user.getEmail())) {
+			task.deleteLabelLeader(label);
 			labelRepository.delete(label);
 		} else {
 			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
 		}
 		return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
+	}
+
+	@Transactional
+	public ResponseEntity<SuccessResponseDto> inviteLabel(User user, LabelRequestDto labelRequestDto, Long labelId) {
+		Task task = validateTask(labelRequestDto.getTaskId());
+		Label label = validateLabel(labelId);
+		User invitedUser = userRepository.findByEmail(labelRequestDto.getEmail())
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		LabelUser labelUser = LabelUser.create(LabelUserRequestDto.create(invitedUser));
+		if (!(task.getProject().getProjectLeader().equals(user.getEmail()) ||
+			Objects.equals(task.getTaskLeader(), user.getEmail()) ||
+			Objects.equals(label.getLabelLeader(), user.getEmail()))) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		} else if (label.getLabelUserList().contains(labelUser)) {
+			throw new CustomException(ErrorCode.DUPLICATE_MEMBER);
+		} else {
+			validateExistMember(task, TaskUser.create(task, invitedUser));
+			label.addLabelUser(labelUser);
+			labelRepository.save(label);
+		}
+		label.addLabelUser(labelUser);
+		return SuccessResponseDto.toResponseEntity(SuccessCode.JOINED_SUCCESSFULLY);
+	}
+
+	public ResponseEntity<SuccessResponseDto> manageLeader(User user, LabelRequestDto labelRequestDto, Long labelId) {
+		User userToManage = validateUserByEmail(labelRequestDto.getEmail());
+		Task task = validateTask(labelRequestDto.getTaskId());
+		Label label = validateLabel(labelId);
+		validateExistMember(label, LabelUser.create(label, userToManage));
+		if (task.getProject().getProjectLeader().equals(user.getEmail()) ||
+			Objects.equals(task.getTaskLeader(), user.getEmail())) {
+			if (label.getLabelLeader() == null) {
+				label.setLabelLeader(userToManage.getEmail());
+				task.getLabelLeadersList().add(userToManage.getEmail());
+			} else if (!label.getLabelLeader().equals(userToManage.getEmail())) {
+				label.setLabelLeader(userToManage.getEmail());
+				task.getLabelLeadersList().remove(label.getLabelLeader());
+				task.getLabelLeadersList().add(userToManage.getEmail());
+			} else {
+				label.setLabelLeader(null);
+				task.getLabelLeadersList().remove(userToManage.getEmail());
+			}
+		} else {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+		return SuccessResponseDto.toResponseEntity(SuccessCode.UPDATED_SUCCESSFULLY);
+	}
+
+	private User validateUserByEmail(String email) {
+		return userRepository.findByEmail(email).orElseThrow(
+			() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)
+		);
+	}
+
+	private void validateExistMember(Task task, TaskUser taskUser) {
+		if (!task.getTaskUserList().contains(taskUser)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+	}
+
+	private void validateExistMember(Label label, LabelUser labelUser) {
+		if (!label.getLabelUserList().contains(labelUser)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
 	}
 
 	private Task validateTask(Long id) { //todo AOP 적용
@@ -68,11 +139,5 @@ public class LabelService {
 		return labelRepository.findById(id).orElseThrow(
 			() -> new CustomException(ErrorCode.LABEL_NOT_FOUND)
 		);
-	}
-
-	private void validateExistMember(Task task, TaskUser taskUser) {
-		if (!task.getTaskUserList().contains(taskUser)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-		}
 	}
 }
