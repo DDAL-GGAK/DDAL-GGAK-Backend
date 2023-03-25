@@ -6,42 +6,48 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 
-import com.ddalggak.finalproject.domain.project.dto.ProjectResponseDto;
-import com.ddalggak.finalproject.domain.project.entity.Project;
-import com.ddalggak.finalproject.domain.task.dto.TaskBriefResponseDto;
+
 import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
 import com.ddalggak.finalproject.domain.ticket.entity.TicketStatus;
-import com.ddalggak.finalproject.domain.user.dto.UserResponseDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
+
+
 public class TicketResponseDto {
+	@Schema(name = "ticket id", example = "1")
 	private Long ticketId;
+	@Schema(name = "ticket title", example = "ticket title")
 	private String ticketTitle;
+	@Schema(name = "label leader", example = "label leader")
+	private String labelLeader;
+	@Schema(name = "ticket description", example = "ticket description")
 	private String ticketDescription;
-	private Long priority;
-	private Long difficulty;
+	@Schema(name = "ticket priority", example = "ticket priority")
+	private int totalPriority;
+	@Schema(name = "ticket difficulty", example = "ticket difficulty")
+	private int totalDifficulty;
+	@Schema(name = "ticket assigned", example = "ticket assigned")
 	private String assigned;
+	@Schema(name = "ticket assigned", example = "ticket assigned")
 	private LocalDate ticketExpiredAt;
+	@Schema(name = "total comments")
 	private List<CommentResponseDto> comments;
-	private TicketStatus status;
+
 
 	@Builder
-	public TicketResponseDto(Ticket ticket) {//, List<CommentResponseDto> comments) {
+	public TicketResponseDto(Ticket ticket, List<CommentResponseDto> comments) {
 		ticketId = ticket.getTicketId();
 		ticketTitle = ticket.getTicketTitle();
 		ticketDescription = ticket.getTicketDescription();
-		priority = (long)ticket.getPriority();
-		difficulty = (long)ticket.getDifficulty();
+		totalPriority = ticket.getTotalPriority();
+		totalDifficulty = ticket.getTotalDifficulty();
 		assigned = ticket.getAssigned();
-		ticketExpiredAt = LocalDate.from(ticket.getExpiredAt());
-		status = ticket.getStatus();
-		// this.comments = comments;
+		ticketExpiredAt = ticket.getTicketExpiredAt();
+		comments = comments;
+
 	}
 
 	public static TicketResponseDto of(Ticket ticket) {
@@ -49,11 +55,11 @@ public class TicketResponseDto {
 			.ticket(ticket)
 			.build();
 	}
-	public static ResponseEntity<TicketResponseDto> ticketResponseDtoResponseEntity(Ticket ticket) {
-		return ResponseEntity
-			.status(200)
-			.body(TicketResponseDto.builder()
-				.ticket(ticket)
-				.build());
-	}
+	// public static ResponseEntity<TicketResponseDto> ticketResponseDtoResponseEntity(Ticket ticket) {
+	// 	return ResponseEntity
+	// 		.status(200)
+	// 		.body(TicketResponseDto.builder()
+	// 			.ticket(ticket)
+	// 			.build());
+	// }
 }
