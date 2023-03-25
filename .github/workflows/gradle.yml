@@ -82,7 +82,7 @@ jobs:
             aws deploy push \
             --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
             --ignore-hidden-files \
-            --s3-location s3://${{  S3_BUCKET_NAME }}/$GITHUB_SHA.zip \
+            --s3-location s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip \
             --source .
             
 #         - name: Upload to AWS S3
@@ -106,7 +106,7 @@ jobs:
                --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
                --deployment-config-name CodeDeployDefault.AllAtOnce \
                --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-               --s3-location bucket=$,${{  S3_BUCKET_NAME }}.key=$GITHUB_SHA.zip,bundleType=zip 
+               --s3-location bucket=$,${{ secrets.S3_BUCKET_NAME }}.key=$GITHUB_SHA.zip,bundleType=zip 
 #         - name: Upload to S3
 #           env:
 #             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
