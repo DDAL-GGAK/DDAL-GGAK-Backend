@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TicketResponseDto {
 	@Schema(name = "ticket id", example = "1")
-	private Long ticketId;
+	public Long ticketId;
 	@Schema(name = "ticket title", example = "ticket title")
 	private String ticketTitle;
 	@Schema(name = "ticket description", example = "ticket description")

@@ -27,7 +27,6 @@ import com.ddalggak.finalproject.domain.user.repository.UserRepository;
 import com.ddalggak.finalproject.global.dto.SuccessCode;
 import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.error.CustomException;
-import com.ddalggak.finalproject.global.error.ErrorCode;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -106,6 +105,16 @@ public class TicketService {
 		// }
 		//
 		// // 티켓 전체조회 (테스크에 들어갈 내용)
+		// 티켓 상세 조회
+		// @Transactional
+		// public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, Long taskId, String email) {
+		// 	Task task = validateTask(taskId);
+		// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+		// 		() -> new CustomException(TICKET_NOT_FOUND));
+		// 	List<CommentResponseDto> commentResponseDtoList = getComment(ticket);
+		// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
+		// 	return ResponseEntity.ok().body(ticketResponseDto);
+		// }
 
 		// 티켓 상세조회 (해당되는 티켓만 조회 // 로직 다시 짜보기)
 		@Transactional(readOnly = true)
@@ -120,6 +129,7 @@ public class TicketService {
 			TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
 			return ResponseEntity.ok().body(ticketResponseDto);
 		}
+
 	// @Transactional(readOnly = true)
 	// public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, String email) {
 	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
@@ -128,27 +138,6 @@ public class TicketService {
 	// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
 	// 	return ResponseEntity.ok().body(ticketResponseDto);
 	// }
-	// // 티켓에 있는 댓글 가져오기
-	// private List<CommentResponseDto> getComment(Ticket ticket) {
-	// 	List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-	// 	List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
-	// 	for (Comment c : commentList) {
-	// 		commentResponseDtoList.add(new CommentResponseDto(c));
-	// 	}
-	// 	return commentResponseDtoList;
-	// }
-
-
-	// 티켓에 있는 댓글 가져오기
-		private List<CommentResponseDto> getComment(Ticket ticket) {
-			List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-			List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
-			for (Comment c : commentList) {
-				commentResponseDtoList.add(new CommentResponseDto(c));
-			}
-			return commentResponseDtoList;
-		}
-
 
 		// // 티켓 상세 조회
 		// // (태스크가 존재하는 지부터 들어가기
@@ -192,10 +181,18 @@ public class TicketService {
 			else throw new CustomException(UNAUTHORIZED_USER);
 			return SuccessResponseDto.toResponseEntity(SuccessCode.UPDATED_SUCCESSFULLY);
 		}
-
 		// 티켓 삭제하기
 		@Transactional
 		public ResponseEntity<?> deleteTicket(Long ticketId, User user) {
+			// Ticket ticket = validateTicket(ticketId);
+			// if (ticket.getTask().getTaskLeader().equals(user.getEmail()) ||
+			// 	Objects.equals(ticket.getLabelLeader(), user.getEmail())) {
+			// 	ticket.getTask().deleteLabelLeader(ticket);
+			// 	ticketRepository.delete(ticket);
+			// } else {
+			// 	throw new CustomException(UNAUTHORIZED_USER);
+			// }
+			// return SuccessResponseDto.toResponseEntity(SuccessCode.DELETED_SUCCESSFULLY);
 			Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
 				() -> new CustomException(TICKET_NOT_FOUND));
 			if (user.getEmail().equals(ticket.getUserList().getEmail()))
@@ -203,9 +200,7 @@ public class TicketService {
 			else
 				throw new CustomException(UNAUTHORIZED_USER);
 			return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
-
 		}
-
 	/* == 반복 로직 == */
 	// task 유무 확인
 	private Task validateTask(Long taskId) {
@@ -215,16 +210,14 @@ public class TicketService {
 	public Ticket getTicket(User user, @Valid TicketResponseDto ticketResponseDto, Long ticketId) {
 		return ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
 	}
-
 	// User Email 유무 확인
 	private User validateUserByEmail(String email) {
 		return userRepository.findByEmail(email).orElseThrow(
 			() -> new CustomException(MEMBER_NOT_FOUND)
 		);
 	}
-//ticketid랑 task의 ticketList 동일한지 검사 필요
-	// ticket 유효성 검사
-private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetails, Long taskId, Long ticketId) {
+	// ticket 조회 유효성 검사
+	private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetails, Long taskId, Long ticketId) {
 	// task에 해당 ticket이 있는지 검사
 	if (!ticket.getTicketId().equals(task.getTaskId()))
 		throw new CustomException(TICKET_NOT_FOUND);
@@ -232,7 +225,7 @@ private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetai
 	// if (!ticket.getUserList().getUserId().equals(userDetails.getUser().getUserId()))
 	// 	throw new CustomException(UNAUTHORIZED_USER);
 	if (!ticket.getTicketId().equals(userDetails.getUser().getUserId()));
-		throw new CustomException(UNAUTHORIZED_USER);
+	throw new CustomException(UNAUTHORIZED_USER);
 		// ticketId task의 ticketList 동일한 위치에
 		// if (!(task.getLabelLeadersList().equals(user.getEmail())) || task.getLabelLeadersList().contains(user.getEmail())) {
 
@@ -240,8 +233,17 @@ private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetai
 		// if (!ticket.getTicketId().equals(task.getTicketList()))
 		// 	throw new CustomException(TICKET_NOT_FOUND);
 	}
+	// 티켓에 있는 댓글 가져오기
+	private List<CommentResponseDto> getComment(Ticket ticket) {
+		List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+		List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
+		for (Comment c : commentList) {
+			commentResponseDtoList.add(new CommentResponseDto(c));
+		}
+		return commentResponseDtoList;
+	}
 	// 권한 부여
-	private void validateExistMember(Task task, User user) {
+	private void validateExistUser(Task task, User user) {
 		if (!(task.getLabelLeadersList().equals(user.getEmail())) || task.getLabelLeadersList().contains(user.getEmail())) {
 			throw new CustomException(UNAUTHORIZED_USER);
 		}
