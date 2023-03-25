@@ -39,7 +39,7 @@ public class WebSecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		// h2-console 사용 및 resources 접근 허용 설정
 		return (web) -> web.ignoring()
-			.requestMatchers(PathRequest.toH2Console())
+			// .requestMatchers(PathRequest.toH2Console())
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 
@@ -52,6 +52,8 @@ public class WebSecurityConfig {
 		//http.authorizeRequests().anyRequest().authenticated();
 		http.authorizeRequests()
 			.antMatchers("/api/auth/**")
+			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/user/**")
 			.permitAll()
 			.antMatchers(HttpMethod.GET, "/api/project/**")
 			.permitAll()

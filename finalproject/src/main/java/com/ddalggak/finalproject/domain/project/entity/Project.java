@@ -17,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.StringUtils;
 
 import com.ddalggak.finalproject.domain.project.dto.ProjectRequestDto;
 import com.ddalggak.finalproject.domain.task.entity.Task;
@@ -31,6 +33,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Project extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,6 +83,12 @@ public class Project extends BaseEntity {
 
 	public void addTask(Task task) {
 		taskList.add(task);
+	}
+
+	public void deleteTaskLeader(Task task) {
+		if ((StringUtils.hasText(task.getTaskLeader()))) {
+			taskLeadersList.remove(task.getTaskLeader());
+		}
 	}
 
 }

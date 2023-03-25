@@ -2,7 +2,11 @@ package com.ddalggak.finalproject.domain.ticket.comment.dto;
 
 import java.time.LocalDateTime;
 
+import org.springframework.http.ResponseEntity;
+
 import com.ddalggak.finalproject.domain.ticket.comment.entity.Comment;
+import com.ddalggak.finalproject.domain.ticket.dto.TicketRequestDto;
+import com.ddalggak.finalproject.domain.ticket.dto.TicketResponseDto;
 import com.ddalggak.finalproject.domain.user.entity.User;
 
 import lombok.Builder;

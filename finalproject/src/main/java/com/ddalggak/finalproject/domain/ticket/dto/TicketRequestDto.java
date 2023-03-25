@@ -1,27 +1,48 @@
 package com.ddalggak.finalproject.domain.ticket.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
+import java.time.LocalDate;
+
+import javax.validation.constraints.NotNull;
+
+import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
+
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+
 public class TicketRequestDto {
-	@Schema(name = "티켓 이름")
+	@Schema(name = "task Id")
+	@NotNull(message = "task Id is required")
+	private Long taskId;
+	@Schema(name = "ticket title", example = "ticket title")
 	private String ticketTitle;
-	@Schema(name = "티켓 내용")
+	@Schema(name = "ticket Description", example = "ticket Description")
 	private String ticketDescription;
-	@Schema(name = "티켓 중요도")
-	private Long priority;
-	@Schema(name = "티켓 난이도")
-	private Long difficulty;
-	@Schema(name = "티켓 작성자")
+	@Schema(name = "ticket priority", example = "ticket priority")
+	private int totalPriority;
+	@Schema(name = "ticket difficulty", example = "ticket difficulty")
+	private int totalDifficulty;
+	@Schema(name = "ticket assigned", example = "ticket assigned")
 	private String assigned;
-	@Schema(name = "티켓 마감 날짜")
-	private LocalDateTime expiredAt;
-	@Schema(name = "댓글 작성")
-	private String comment;
+	@Schema(name = "when does this project expired at", example = "2023-03-22")
+	private LocalDate ticketExpiredAt;
+
+	// @Builder
+	// public TicketRequestDto(Ticket t) {
+	// 	this.taskId = t.getTask().getTaskId();
+	// 	this.ticketTitle = t.getTicketTitle();
+	// 	this.ticketDescription = t.getTicketDescription();
+	// 	this.totalPriority = t.getTotalPriority();
+	// 	this.totalDifficulty = t.getTotalDifficulty();
+	// 	this.assigned = t.getAssigned();
+	// 	this.ticketExpiredAt = t.getTicketExpiredAt();
+	// }
+	//
+	// public static TicketResponseDto of(Ticket ticket) {
+	// 	return TicketResponseDto.builder()
+	// 		.ticket(ticket)
+	// 		.build();
+	// }
 }

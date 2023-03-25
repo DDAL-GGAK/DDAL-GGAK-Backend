@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentRequestDto;
 import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
 import com.ddalggak.finalproject.domain.ticket.comment.service.CommentService;
 import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
@@ -31,10 +32,11 @@ public class CommentController {
 	@PostMapping("")
 	public ResponseEntity<?> createComment
 	(	@PathVariable Long ticketId,
+		@PathVariable Long commentId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody CommentResponseDto commentResponseDto
+		@RequestBody CommentRequestDto commentRequestDto
 	) {
-		return commentService.createComment(userDetails, ticketId, commentResponseDto);
+		return commentService.createComment(userDetails, ticketId, commentId, commentRequestDto);
 	}
 
 	// // 로그 전체 조회
@@ -51,9 +53,10 @@ public class CommentController {
 	@PatchMapping("/{commentId}")
 	public ResponseEntity<SuccessResponseDto> updateComment(
 		@PathVariable Long ticketId,
-		@RequestBody CommentResponseDto commentResponseDto,
+		@PathVariable Long commentId,
+		@RequestBody CommentRequestDto commentRequestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return commentService.updateComment(ticketId, commentResponseDto, userDetails);
+		return commentService.updateComment(ticketId, commentId, commentRequestDto, userDetails);
 	}
 	// 댓글 삭제
 	@Operation(summary = "delete ticket comment", description = "comment 삭제 delete 메서드 체크")
