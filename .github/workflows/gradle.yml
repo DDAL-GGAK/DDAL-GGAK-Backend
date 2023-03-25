@@ -23,7 +23,7 @@ env:
   S3_BUCKET_NAME: ddal-ggak-codedeploy-app
   CODE_DEPLOY_APPLICATION_NAME: ddal-ggak-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ddal-ggak-codedeploy-deployment-group
-#   ZIP_NAME: export NAME:${GITHUB_SHA}
+  ZIP_NAME: export NAME:${GITHUB_SHA}
 jobs:
     build:
       runs-on: ubuntu-latest
