@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ddalggak.finalproject.domain.randomCode.RandomCodeDto;
+import com.ddalggak.finalproject.domain.randomCode.RandomCodeService;
 import com.ddalggak.finalproject.domain.user.dto.EmailRequestDto;
 import com.ddalggak.finalproject.domain.user.dto.NicknameRequestDto;
 import com.ddalggak.finalproject.domain.user.dto.UserRequestDto;
@@ -45,6 +47,7 @@ public class UserController {
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 	private final MailService mailService;
+	private final RandomCodeService randomCodeService;
 
 	@PostMapping("/auth/email")
 	public ResponseEntity<?> emailAuthentication(@Valid @RequestBody EmailRequestDto emailRequestDto,
@@ -59,6 +62,12 @@ public class UserController {
 		mailService.sendMail(emailRequestDto.getEmail());
 		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_SEND);
 
+	}
+
+	@GetMapping("/auth/email")
+	public ResponseEntity<?> randomCoedAuthentication(@RequestBody RandomCodeDto randomCodeDto) {
+		randomCodeService.authenticate(randomCodeDto);
+		return SuccessResponseDto.toResponseEntity(SuccessCode.SUCCESS_SEND);
 	}
 
 	@PostMapping("/auth/signup")
