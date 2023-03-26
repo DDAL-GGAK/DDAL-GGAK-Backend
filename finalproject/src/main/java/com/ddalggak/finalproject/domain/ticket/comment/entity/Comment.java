@@ -36,7 +36,7 @@ public class Comment extends BaseEntity {
 	public Comment(User user, Ticket ticket, CommentRequestDto comments) {
 		this.commentId = getCommentId();
 		this.user = user;
-		this.ticket = ticket;
+		this.ticket = getTicket();
 		this.comment = comments.getComment();
 
 	}

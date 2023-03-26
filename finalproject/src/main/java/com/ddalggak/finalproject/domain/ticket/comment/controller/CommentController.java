@@ -1,5 +1,7 @@
 package com.ddalggak.finalproject.domain.ticket.comment.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,12 +31,10 @@ public class CommentController {
 	// 댓글 등록
 	@Operation(summary = "ticket comment", description = "comment 등록 post 메서드 체크")
 	@PostMapping("/comment")
-	public ResponseEntity<?> createComment(
-		@PathVariable Long ticketId,
-		@PathVariable Long commentId,
+	public ResponseEntity<SuccessResponseDto> createComment(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@RequestBody CommentRequestDto commentRequestDto) {
-		return commentService.createComment(userDetails, ticketId, commentId, commentRequestDto);
+		@Valid @RequestBody CommentRequestDto commentRequestDto) {
+		return commentService.createComment(userDetails, commentRequestDto);
 	}
 
 	// // 로그 전체 조회
@@ -48,21 +48,21 @@ public class CommentController {
 
 	// 댓글 수정
 	@Operation(summary = "patch ticket comment", description = "comment 수정 get 메서드 체크")
-	@PatchMapping("/{commentId}")
+	@PatchMapping("/commemt/{commentId}")
 	public ResponseEntity<SuccessResponseDto> updateComment(
-		@PathVariable Long ticketId,
-		@PathVariable Long commentId,
-		@RequestBody CommentRequestDto commentRequestDto,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return commentService.updateComment(ticketId, commentId, commentRequestDto, userDetails);
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@PathVariable("ticketId") Long ticketId,
+		@PathVariable("commentId") Long commentId,
+		@RequestBody CommentRequestDto commentRequestDto) {
+		return commentService.updateComment(userDetails, ticketId, commentId, commentRequestDto);
 	}
 	// 댓글 삭제
 	@Operation(summary = "delete ticket comment", description = "comment 삭제 delete 메서드 체크")
-	@DeleteMapping("/{commentId}")
+	@DeleteMapping("/commemt/{commentId}")
 	public ResponseEntity<SuccessResponseDto> deleteComment(
-		@PathVariable Long ticketId,
-		@PathVariable Long commentId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@PathVariable("ticketId") Long ticketId,
+		@PathVariable("commentId") Long commentId) {
 		return commentService.deleteComment(userDetails, ticketId, commentId);
 	}
 }
