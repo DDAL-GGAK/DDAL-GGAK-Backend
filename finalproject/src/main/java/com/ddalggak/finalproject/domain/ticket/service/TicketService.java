@@ -4,13 +4,13 @@ import static com.ddalggak.finalproject.global.error.ErrorCode.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.validation.Valid;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ddalggak.finalproject.domain.label.entity.Label;
 import com.ddalggak.finalproject.domain.task.dto.TaskUserRequestDto;
 import com.ddalggak.finalproject.domain.task.entity.Task;
 import com.ddalggak.finalproject.domain.task.entity.TaskUser;
@@ -118,18 +118,50 @@ public class TicketService {
 
 		// 티켓 상세조회 (해당되는 티켓만 조회 // 로직 다시 짜보기)
 		@Transactional(readOnly = true)
-		public ResponseEntity<TicketResponseDto> getTicket(User user, Long taskId, Long ticketId) {
-			Task task = validateTask(taskId);
-			// Ticket ticket = validateTicket(ticketId);
-			validateExistTeam(task, TaskUser.create(task, user));
-			// return ResponseEntity.of(ticket);
-			Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
-				() -> new CustomException(TICKET_NOT_FOUND));
-			List<CommentResponseDto> commentResponseDtoList = getComment(ticket);
-			TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
-			return ResponseEntity.ok().body(ticketResponseDto);
-		}
+		public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, User user) {
+			System.out.println("-----------------------user = " + user.getEmail());
+			Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
 
+			List<CommentResponseDto> commentList = getComment(ticket);
+			TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentList);
+			return ResponseEntity.ok().body(ticketResponseDto);
+
+		}
+	private List<CommentResponseDto> getComment(Ticket ticket) {
+		List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+		List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
+		for (Comment c : commentList) {
+			commentResponseDtoList.add(new CommentResponseDto(c));
+		}
+		return commentResponseDtoList;
+	}
+
+	// @Transactional(readOnly = true)
+		// public ResponseEntity<TicketResponseDto> getTicket(UserDetailsImpl userDetails, Long taskId, Long ticketId) {
+		// 	User user = userDetails.getUser();
+		// 	System.out.println("--------user = " + user.getEmail());
+		// 	Task task = validateTask(taskId);
+		// 	// Ticket ticket = validateGetTicket(ticketId);
+		// 	// validateExistTeam(task, TaskUser.create(task, user));
+		// 	// return ResponseEntity.of(ticket);
+		// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+		// 		() -> new CustomException(TICKET_NOT_FOUND));
+		// 	List<CommentResponseDto> commentResponseDtoList = getComment(ticket);
+		// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
+		// 	return ResponseEntity.ok().body(ticketResponseDto);
+
+	// private void validateGetTicket(Task task, Ticket ticket,  UserDetailsImpl userDetails, Long taskId, Long ticketId) {
+	// 	// task에 해당 ticket이 있는지 검사
+	// 	if (!ticket.getTicketId().equals(task.getTaskId()))
+	// 		throw new CustomException(TICKET_NOT_FOUND);
+	// 	// ticket 작성자와 요청자의 일치 여부 검사
+	// 	// if (!ticket.getUserList().getUserId().equals(userDetails.getUser().getUserId()))
+	// 	// 	throw new CustomException(UNAUTHORIZED_USER);
+	// 	if (!ticket.getTicketId().equals(userDetails.getUser().getUserId()))
+	// 		;
+	// 	throw new CustomException(UNAUTHORIZED_USER);
+	// }
+		// ticketId task의 ticketList 동일한 위치에
 	// @Transactional(readOnly = true)
 	// public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, String email) {
 	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
@@ -183,7 +215,7 @@ public class TicketService {
 		}
 		// 티켓 삭제하기
 		@Transactional
-		public ResponseEntity<?> deleteTicket(Long ticketId, User user) {
+		public ResponseEntity<SuccessResponseDto> deleteTicket(Long ticketId, User user) {
 			// Ticket ticket = validateTicket(ticketId);
 			// if (ticket.getTask().getTaskLeader().equals(user.getEmail()) ||
 			// 	Objects.equals(ticket.getLabelLeader(), user.getEmail())) {
@@ -207,7 +239,7 @@ public class TicketService {
 		return taskRepository.findById(taskId).orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 	}
 	// ticket 유무 확인
-	public Ticket getTicket(User user, @Valid TicketResponseDto ticketResponseDto, Long ticketId) {
+	public Ticket getTicket(User user, Long ticketId) {
 		return ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
 	}
 	// User Email 유무 확인
@@ -216,32 +248,24 @@ public class TicketService {
 			() -> new CustomException(MEMBER_NOT_FOUND)
 		);
 	}
-	// ticket 조회 유효성 검사
-	private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetails, Long taskId, Long ticketId) {
-	// task에 해당 ticket이 있는지 검사
-	if (!ticket.getTicketId().equals(task.getTaskId()))
-		throw new CustomException(TICKET_NOT_FOUND);
-	// ticket 작성자와 요청자의 일치 여부 검사
-	// if (!ticket.getUserList().getUserId().equals(userDetails.getUser().getUserId()))
-	// 	throw new CustomException(UNAUTHORIZED_USER);
-	if (!ticket.getTicketId().equals(userDetails.getUser().getUserId()));
-	throw new CustomException(UNAUTHORIZED_USER);
-		// ticketId task의 ticketList 동일한 위치에
-		// if (!(task.getLabelLeadersList().equals(user.getEmail())) || task.getLabelLeadersList().contains(user.getEmail())) {
-
-			// if (!ticket.getTicketId().equals(userDetails.getEmail()) || (!task.getTicketList().equals(taskId)))
-		// if (!ticket.getTicketId().equals(task.getTicketList()))
-		// 	throw new CustomException(TICKET_NOT_FOUND);
-	}
+	// ticket 유효성 검사
+	// private void validateTicket(Task task, Ticket ticket,  UserDetailsImpl userDetails, Long taskId, Long ticketId) {
+	// // task에 해당 ticket이 있는지 검사
+	// if (!ticket.getTicketId().equals(task.getTaskId()))
+	// 	throw new CustomException(TICKET_NOT_FOUND);
+	// // ticket 작성자와 요청자의 일치 여부 검사
+	// // if (!ticket.getUserList().getUserId().equals(userDetails.getUser().getUserId()))
+	// // 	throw new CustomException(UNAUTHORIZED_USER);
+	// if (!ticket.getTicketId().equals(userDetails.getUser().getUserId()));
+	// throw new CustomException(UNAUTHORIZED_USER);
+	// 	// ticketId task의 ticketList 동일한 위치에
+	// 	// if (!(task.getLabelLeadersList().equals(user.getEmail())) || task.getLabelLeadersList().contains(user.getEmail())) {
+	//
+	// 		// if (!ticket.getTicketId().equals(userDetails.getEmail()) || (!task.getTicketList().equals(taskId)))
+	// 	// if (!ticket.getTicketId().equals(task.getTicketList()))
+	// 	// 	throw new CustomException(TICKET_NOT_FOUND);
+	// }
 	// 티켓에 있는 댓글 가져오기
-	private List<CommentResponseDto> getComment(Ticket ticket) {
-		List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-		List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
-		for (Comment c : commentList) {
-			commentResponseDtoList.add(new CommentResponseDto(c));
-		}
-		return commentResponseDtoList;
-	}
 	// 권한 부여
 	private void validateExistUser(Task task, User user) {
 		if (!(task.getLabelLeadersList().equals(user.getEmail())) || task.getLabelLeadersList().contains(user.getEmail())) {
@@ -259,11 +283,13 @@ public class TicketService {
 	private void validateTeamLeader(Ticket ticket, UserDetailsImpl userDetails) {
 	}
 
-	private void validateExistTeam(Task task, TaskUser taskUser) {
-		if(!task.getTaskLeader().contains(taskUser.toString())) {
+	private void validateExistTeam(Label label, TaskUser taskUser) {
+		if(!label.getLabelLeader().contains(taskUser.toString())) {
 			throw new CustomException(UNAUTHORIZED_USER);
 		}
 	}
+
+
 
 	// private void validateExistMember(Task task, TaskUser taskUser) {
 	// 	if (!task.getTaskUserList().contains(taskUser)) {
