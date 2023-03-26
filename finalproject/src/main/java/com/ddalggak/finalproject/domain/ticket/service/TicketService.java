@@ -4,11 +4,13 @@ import static com.ddalggak.finalproject.global.error.ErrorCode.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ddalggak.finalproject.domain.label.entity.Label;
 import com.ddalggak.finalproject.domain.task.dto.TaskUserRequestDto;
@@ -29,6 +31,7 @@ import com.ddalggak.finalproject.global.dto.SuccessResponseDto;
 import com.ddalggak.finalproject.global.error.CustomException;
 import com.ddalggak.finalproject.global.security.UserDetailsImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,16 +120,43 @@ public class TicketService {
 		// }
 
 		// 티켓 상세조회 (해당되는 티켓만 조회 // 로직 다시 짜보기)
-		@Transactional(readOnly = true)
-		public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, User user) {
-			System.out.println("-----------------------user = " + user.getEmail());
-			Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
+		// @Transactional(readOnly = true)
+		// public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, Long taskId, User user) {
+		// 	System.out.println("-----------------------user = " + user.getEmail());
+		// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
+		// 	Task task = taskRepository.findById(taskId).orElseThrow(()-> new CustomException(TASK_NOT_FOUND));
+		//
+		// 	// List<CommentResponseDto> commentList = getComment(ticket);
+		// 	// TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentList);
+		// 	// return ResponseEntity.ok().body(ticketResponseDto);
+		//
+		// }
 
-			List<CommentResponseDto> commentList = getComment(ticket);
-			TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentList);
-			return ResponseEntity.ok().body(ticketResponseDto);
+	// @Transactional(readOnly = true)
+	// public ResponseEntity<TicketResponseDto> getTicket(User user, Long taskId, Long ticketId) {
+	// 	System.out.println("-----------------------user = " + user.getEmail());
+	// 	Task task = validateTask(taskId);
+	// 	// Ticket ticket = validateTicket(ticketId);
+	// 	// validateExistTeam(task, TaskUser.create(task, user));
+	// 	// return ResponseEntity.of(ticket);
+	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+	// 		() -> new CustomException(TICKET_NOT_FOUND));
+	// 	List<CommentResponseDto> commentResponseDtoList = getComment(ticket);
+	// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
+	// 	return ResponseEntity.ok().body(ticketResponseDto);
+	// }
+	// 티켓 상세조회 (해당되는 티켓만 조회 // 로직 다시 짜보기)
+	@Transactional(readOnly = true)
+	public ResponseEntity<TicketResponseDto> getTicket(Long ticketId, User user, TicketRequestDto ticketRequestDto) {
+		System.out.println("-----------------------user = " + user.getEmail());
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new CustomException(TICKET_NOT_FOUND));
 
-		}
+		List<CommentResponseDto> commentList = getComment(ticket);
+		TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentList);
+		return ResponseEntity.ok().body(ticketResponseDto);
+
+	}
+
 	private List<CommentResponseDto> getComment(Ticket ticket) {
 		List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
 		List<Comment> commentList = commentRepository.findAllByTicketOrderByCreatedAtDesc(ticket);
@@ -137,19 +167,19 @@ public class TicketService {
 	}
 
 	// @Transactional(readOnly = true)
-		// public ResponseEntity<TicketResponseDto> getTicket(UserDetailsImpl userDetails, Long taskId, Long ticketId) {
-		// 	User user = userDetails.getUser();
-		// 	System.out.println("--------user = " + user.getEmail());
-		// 	Task task = validateTask(taskId);
-		// 	// Ticket ticket = validateGetTicket(ticketId);
-		// 	// validateExistTeam(task, TaskUser.create(task, user));
-		// 	// return ResponseEntity.of(ticket);
-		// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
-		// 		() -> new CustomException(TICKET_NOT_FOUND));
-		// 	List<CommentResponseDto> commentResponseDtoList = getComment(ticket);
-		// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
-		// 	return ResponseEntity.ok().body(ticketResponseDto);
-
+	// 	public ResponseEntity<TicketResponseDto> getTicket(User user, Long taskId, Long ticketId) {
+	// 	// User user = userDetails.getUser();
+	// 	System.out.println("--------user = " + user.getEmail());
+	// 	Task task = validateTask(taskId);
+	// 	// Ticket ticket = validateGetTicket(ticketId);
+	// 	// validateExistTeam(task, TaskUser.create(task, user));
+	// 	// return ResponseEntity.of(ticket);
+	// 	Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+	// 		() -> new CustomException(TICKET_NOT_FOUND));
+	// 	List<CommentResponseDto> commentResponseDtoList = getComment(ticket);
+	// 	TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket, commentResponseDtoList);
+	// 	return ResponseEntity.ok().body(ticketResponseDto);
+	// }
 	// private void validateGetTicket(Task task, Ticket ticket,  UserDetailsImpl userDetails, Long taskId, Long ticketId) {
 	// 	// task에 해당 ticket이 있는지 검사
 	// 	if (!ticket.getTicketId().equals(task.getTaskId()))
@@ -283,10 +313,11 @@ public class TicketService {
 	private void validateTeamLeader(Ticket ticket, UserDetailsImpl userDetails) {
 	}
 
-	private void validateExistTeam(Label label, TaskUser taskUser) {
-		if(!label.getLabelLeader().contains(taskUser.toString())) {
+	private Label validateExistTeam(Label label, User user) {
+		if(!label.getLabelLeader().contains(user.toString())) {
 			throw new CustomException(UNAUTHORIZED_USER);
 		}
+		return label;
 	}
 
 
