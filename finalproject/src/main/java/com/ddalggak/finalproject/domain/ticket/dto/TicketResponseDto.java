@@ -2,22 +2,18 @@ package com.ddalggak.finalproject.domain.ticket.dto;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.http.ResponseEntity;
-
 
 import com.ddalggak.finalproject.domain.ticket.comment.dto.CommentResponseDto;
 import com.ddalggak.finalproject.domain.ticket.entity.Ticket;
-import com.ddalggak.finalproject.domain.ticket.entity.TicketStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class TicketResponseDto {
 	@Schema(name = "ticket id", example = "1")
 	private Long ticketId;
@@ -34,21 +30,20 @@ public class TicketResponseDto {
 	@Schema(name = "ticket assigned", example = "ticket assigned")
 	private LocalDate ticketExpiredAt;
 	@Schema(name = "total comments")
-	private List<CommentResponseDto> comments;
+	private List<CommentResponseDto> commentList;
 	@Schema(name = "label leader", example = "label leader")
 	private String labelLeader;
 
 	@Builder
-	public TicketResponseDto(Ticket ticket, List<CommentResponseDto> comments) {
-		ticketId = ticket.getTicketId();
-		ticketTitle = ticket.getTicketTitle();
-		ticketDescription = ticket.getTicketDescription();
-		totalPriority = ticket.getTotalPriority();
-		totalDifficulty = ticket.getTotalDifficulty();
-		assigned = ticket.getAssigned();
-		ticketExpiredAt = ticket.getTicketExpiredAt();
-		// comments = ticket.getComment().stream().map(CommentResponseDto::of).collect(Collectors.toCollection());
-
+	public TicketResponseDto(Ticket ticket, List<CommentResponseDto> commentList) {
+		this.ticketId = ticket.getTicketId();
+		this.ticketTitle = ticket.getTicketTitle();
+		this.ticketDescription = ticket.getTicketDescription();
+		this.totalPriority = ticket.getTotalPriority();
+		this.totalDifficulty = ticket.getTotalDifficulty();
+		this.assigned = ticket.getAssigned();
+		this.ticketExpiredAt = ticket.getTicketExpiredAt();
+		this.commentList = commentList;
 	}
 
 	public static TicketResponseDto of(Ticket ticket) {

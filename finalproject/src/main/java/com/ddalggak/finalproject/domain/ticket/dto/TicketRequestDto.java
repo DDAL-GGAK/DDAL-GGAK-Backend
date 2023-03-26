@@ -29,21 +29,4 @@ public class TicketRequestDto {
 	private String assigned;
 	@Schema(name = "when does this project expired at", example = "2023-03-22")
 	private LocalDate ticketExpiredAt;
-
-	// @Builder
-	// public TicketRequestDto(Ticket t) {
-	// 	this.taskId = t.getTask().getTaskId();
-	// 	this.ticketTitle = t.getTicketTitle();
-	// 	this.ticketDescription = t.getTicketDescription();
-	// 	this.totalPriority = t.getTotalPriority();
-	// 	this.totalDifficulty = t.getTotalDifficulty();
-	// 	this.assigned = t.getAssigned();
-	// 	this.ticketExpiredAt = t.getTicketExpiredAt();
-	// }
-	//
-	// public static TicketResponseDto of(Ticket ticket) {
-	// 	return TicketResponseDto.builder()
-	// 		.ticket(ticket)
-	// 		.build();
-	// }
 }
