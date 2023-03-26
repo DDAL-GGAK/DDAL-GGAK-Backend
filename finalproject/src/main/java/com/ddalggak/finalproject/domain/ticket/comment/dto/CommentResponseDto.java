@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 public class CommentResponseDto {
 	private Long commentId;
 	private String comment;
-	// private String description;
 	private String email;
-
 	@Builder
 	public CommentResponseDto(Comment c) {
 		this.commentId = c.getCommentId();

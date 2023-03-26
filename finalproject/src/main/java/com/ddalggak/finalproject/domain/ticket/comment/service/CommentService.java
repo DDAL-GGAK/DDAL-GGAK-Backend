@@ -60,7 +60,6 @@ public class CommentService {
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
 
-
 	/* == 반복 로직 == */
 
 	// Ticket 유무 확인
@@ -81,6 +80,4 @@ public class CommentService {
 		if(!comment.getUser().getUserId().equals(userDetails.getUser().getUserId()))
 			throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
 	}
-
-
 }

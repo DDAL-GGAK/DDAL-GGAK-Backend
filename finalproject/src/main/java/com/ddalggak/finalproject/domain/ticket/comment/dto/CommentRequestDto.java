@@ -18,14 +18,10 @@ public class CommentRequestDto{
 
 	private String comment;
 	private String email;
-
 	@Builder
 	public CommentRequestDto(Comment c) {
 		this.ticketId = c.getTicket().getTicketId();
 		this.comment = c.getComment();
 		this.email = c.getUser().getEmail();
-
 	}
-
-
 }

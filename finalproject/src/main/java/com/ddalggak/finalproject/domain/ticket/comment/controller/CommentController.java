@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 public class CommentController {
 	private final CommentService commentService;
-
 	// 댓글 등록
 	@Operation(summary = "ticket comment", description = "comment 등록 post 메서드 체크")
 	@PostMapping("/comment")
@@ -36,16 +35,6 @@ public class CommentController {
 		@Valid @RequestBody CommentRequestDto commentRequestDto) {
 		return commentService.createComment(userDetails, commentRequestDto);
 	}
-
-	// // 로그 전체 조회
-	// @Operation(summary = "get ticket log", description = "comment 전체 조회 get 메서드 체크")
-	// @GetMapping("/comment")
-	// public ResponseEntity<BaseResponseDto> getLogs(
-	// 	@PathVariable Long logId,
-	// 	@AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	return commentService.getComments(userDetails.getUser(), logId);
-	// }
-
 	// 댓글 수정
 	@Operation(summary = "patch ticket comment", description = "comment 수정 get 메서드 체크")
 	@PatchMapping("/commemt/{commentId}")

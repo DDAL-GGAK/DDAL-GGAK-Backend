@@ -32,15 +32,12 @@ public class Comment extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
 	private User user;
-
 	public Comment(User user, Ticket ticket, CommentRequestDto comments) {
 		this.commentId = getCommentId();
 		this.user = user;
 		this.ticket = getTicket();
 		this.comment = comments.getComment();
-
 	}
-
 	public void update(String comment) {
 		this.comment = comment;
 	}
