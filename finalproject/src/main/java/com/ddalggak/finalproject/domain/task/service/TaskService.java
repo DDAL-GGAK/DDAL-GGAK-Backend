@@ -45,6 +45,8 @@ public class TaskService {
 		TaskUserRequestDto taskUserRequestDto = TaskUserRequestDto.create(user);
 		TaskUser taskUser = TaskUser.create(taskUserRequestDto);
 		Task task = Task.create(taskRequestDto, taskUser, project);
+		task.setTaskLeader(user.getEmail());
+		task.getProject().getTaskLeadersList().add(user.getEmail());
 		taskRepository.save(task);
 		return SuccessResponseDto.toResponseEntity(SuccessCode.CREATED_SUCCESSFULLY);
 	}
