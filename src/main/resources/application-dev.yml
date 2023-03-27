@@ -1,0 +1,77 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:db;MODE=MYSQL;
+    username: sa
+    password:
+  jpa:
+    properties:
+      hibernate:
+    #        show_sql: true
+    #        format_sql: true
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp@gmail.com
+    port: 587
+    username: psm4502@gmail.com
+    password: udzgbktgyxlnobdo
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  redis:
+    host: localhost
+    port: 6379
+
+
+springdoc:
+  packages-to-scan: com.ddalggak.finalproject
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: ddal-ggak.html # 경로 localhost:8080/ddal-ggak.html
+    tags-sorter: alpha
+    operations-sorter: method
+  api-docs:
+    path: /ddal-ggak/docs # 경로 localhost:8080/ddal-ggak/docs
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+
+custom:
+  logging:
+    dir: C:\Projects\errorLog
+    moduleId: ddalggak
+#logging:
+#  slack:
+#    webhook-uri: https://hooks.slack.com/services/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
+#  config:
+#    classpath: logback-spring.xml
+
+cloud:
+  aws:
+    s3:
+      bucket: ddal-ggak-codedeploy-app
+    credentials:
+      access-key: AKIAWN4JXPYBNH6G45PV
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+jwt:
+  secret:
+    key: xkf1cnl2gk3wl4akf5dk6wn7tp8dy9wp0qkf1qn2xkr3gkq4sl5ek6bb7gla8emf9dj0dy1
+file:
+  size:
+    limit: 10*1024*1024;
